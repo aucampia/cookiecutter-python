@@ -1,6 +1,5 @@
 # ...
 
-
 ```bash
 cookiecutter -v gh:aucampia/cookiecutter-python --overwrite-if-exists --output-dir var/baked/tmp
 
@@ -65,3 +64,7 @@ diff -u -r \
 ```
 TEST_RAPID=true task test
 ```
+
+<!--
+MARK 000
+-->
