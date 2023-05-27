@@ -15,6 +15,10 @@ tasks:
     desc: Configure this project
     cmds:
       - "{{.POETRY}} install {{.CLI_ARGS}}"
+  update:
+    desc: Update dependencies
+    cmds:
+      - "{{.POETRY}} update {{.CLI_ARGS}}"
   black:
     desc: Run black
     cmds:
@@ -44,8 +48,7 @@ tasks:
     cmds:
       - |
         {{.POETRY}} export --without-hashes --with dev --format requirements.txt | \
-          {{.RUN_PYTHON}} -m pip_audit --requirement /dev/stdin --no-deps --strict --desc on \
-          --ignore-vuln GHSA-2p9h-ccw7-33gf
+          {{.RUN_PYTHON}} -m pip_audit --requirement /dev/stdin --no-deps --strict --desc on
   test:
     desc: Run tests
     cmds:

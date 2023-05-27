@@ -153,7 +153,6 @@ class Baker:
             and (next(output_path.glob("*"), None) is not None)
             and not TEST_RAPID
         ):
-
             output_context = json.loads(output_context_path.read_text())
             output_project = json.loads(output_project_path.read_text())
             baked = BakeResult(
