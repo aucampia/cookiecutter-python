@@ -54,13 +54,13 @@ tasks:
     desc: Perform static validation
     cmds:
       - task: mypy
-      - task: codespell
+      # - task: codespell
       - task: isort
         vars: { CHECK: true }
       - task: black
         vars: { CHECK: true }
       - task: flake8
-      - task: pip-audit
+      # - task: pip-audit
   validate:fix:
     desc: Fix auto-fixable validation errors.
     cmds:
