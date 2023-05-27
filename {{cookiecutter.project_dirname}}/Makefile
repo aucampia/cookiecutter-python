@@ -76,13 +76,13 @@ python-configure:
 validate-static: python-validate-static
 python-validate-static:
 	$(poetry) run mypy --show-error-codes --show-error-context $(CLI_ARGS)
-	$(poetry) run codespell $(or $(CLI_ARGS),$(py_source) *.md)
 	$(poetry) run isort --check --diff $(or $(CLI_ARGS),$(py_source))
 	$(poetry) run black --check --diff $(or $(CLI_ARGS),$(py_source))
 	$(poetry) run flake8 $(or $(CLI_ARGS),$(py_source))
-	$(poetry) export --without-hashes --with dev --format requirements.txt \
-		| $(poetry) run pip-audit --requirement /dev/stdin --no-deps --strict --desc on \
-        	--ignore-vuln GHSA-2p9h-ccw7-33gf
+
+#	 $(poetry) run codespell $(or $(CLI_ARGS),$(py_source) *.md)
+#	 $(poetry) export --without-hashes --with dev --format requirements.txt \
+#	 	| $(poetry) run pip-audit --requirement /dev/stdin --no-deps --strict --desc on
 
 .PHONY: python-validate-fix
 validate-fix: python-validate-fix

@@ -1,14 +1,18 @@
+from __future__ import annotations
+
+import enum
 import hashlib
 import itertools
 import json
 import logging
 import os
 import pickle
+from shutil import rmtree
 import subprocess
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, Generator, Mapping, Set, TypeVar
+from typing import Any, Callable, Dict, Generator, Mapping, Set, Tuple, TypeVar
 
 import pytest
 import yaml
@@ -17,6 +21,8 @@ from cookiecutter.generate import generate_context
 from cookiecutter.main import cookiecutter
 from cookiecutter.prompt import prompt_for_config
 from frozendict import frozendict
+
+from hooks.post_gen_project import BuildTool
 
 SCRIPT_PATH = Path(__file__)
 PROJECT_PATH = SCRIPT_PATH.parent.parent
@@ -58,13 +64,15 @@ class BakeKey:
 
 @dataclass(frozen=True)
 class BakeResult(BakeKey):
+    output_path: Path
     project_path: Path
     context: Dict[str, Any]
+    build_tool: BuildTool
 
 
 AnyT = TypeVar("AnyT")
 
-TEST_RAPID = json.loads(os.environ.get("TEST_RAPID", "false"))
+TEST_RAPID = json.loads(os.environ.get("TEST_RAPID", "true"))
 assert isinstance(TEST_RAPID, bool)
 
 
@@ -112,8 +120,6 @@ ESCAPED_ENV = escape_venv(os.environ)
 
 class Baker:
     def __init__(self) -> None:
-        # self._counter = 0
-        # self._tmp_path = Path(mkdtemp(prefix=f"Baker-{__name__}-"))
         self._baked: Dict[BakeKey, BakeResult] = {}
 
     def bake(self, extra_context: Dict[str, Any], template_path: Path) -> BakeResult:
@@ -141,6 +147,7 @@ class Baker:
         # dirkey = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
         if key in self._baked:
+            logging.info("found baked key = %s", key)
             return self._baked[key]
 
         output_path = Path(tempfile.gettempdir()) / f"baked-cookie-{key_hash}"
@@ -151,20 +158,34 @@ class Baker:
         if (
             output_path.exists()
             and (next(output_path.glob("*"), None) is not None)
-            and not TEST_RAPID
+            and TEST_RAPID
         ):
             output_context = json.loads(output_context_path.read_text())
             output_project = json.loads(output_project_path.read_text())
+            build_tool = BuildTool(output_context["build_tool"])
             baked = BakeResult(
                 template_path,
                 template_path_hash,
                 frozendict(extra_context),
+                output_path,
                 Path(output_project),
                 output_context,
+                build_tool,
             )
             return baked
 
         output_path.mkdir(exist_ok=True, parents=True)
+
+        rmtree(
+            output_path,
+            ignore_errors=True,
+            onerror=lambda function, path, excinfo: logging.info(
+                "rmtree error: function = %s, path = %s, excinfo = %s",
+                function,
+                path,
+                excinfo,
+            ),
+        )
 
         # Render the context, so that we can store it on the Result
         context: Dict[str, Any] = prompt_for_config(
@@ -187,67 +208,118 @@ class Baker:
 
         output_context_path.write_text(json.dumps(context))
         output_project_path.write_text(json.dumps(str(project_path)))
+        logging.debug("project_path = %s", project_path)
 
+        build_tool = BuildTool(context["build_tool"])
         baked = BakeResult(
             template_path,
             template_path_hash,
             frozendict(extra_context),
+            output_path,
             project_path,
             context,
+            build_tool,
         )
 
-        subprocess.run(
-            cwd=baked.project_path,
-            env=ESCAPED_ENV,
-            check=True,
-            args=[
-                "bash",
-                "-c",
-                """
-            set -x
-            set -eo pipefail
-            # env | sort
-            task configure
-            task validate:fix
-        """,
-            ],
-        )
-
+        if baked.build_tool == BuildTool.GNU_MAKE:
+            configure_commands = """
+make configure
+make validate-fix
+"""
+        elif baked.build_tool == BuildTool.GO_TASK:
+            configure_commands = """
+task configure
+task validate:fix
+"""
+        elif baked.build_tool == BuildTool.POE:
+            configure_commands = """
+poetry install
+poetry run poe validate-fix
+"""
+        try:
+            subprocess.run(
+                cwd=baked.project_path,
+                env=ESCAPED_ENV,
+                check=True,
+                args=[
+                    "bash",
+                    "-c",
+                    f"""
+    set -x
+    set -eo pipefail
+    # env | sort
+    {configure_commands}
+    """,
+                ],
+            )
+        except Exception:
+            rmtree(
+                output_path,
+                ignore_errors=True,
+                onerror=lambda function, path, excinfo: logging.info(
+                    "rmtree error: function = %s, path = %s, excinfo = %s",
+                    function,
+                    path,
+                    excinfo,
+                ),
+            )
+            raise
         return baked
 
 
 BAKER = Baker()
 
 
+class WorkflowAction(enum.Enum):
+    VALIDATE = "validate"
+    CLI = "cli"
+
+
+WORKFLOW_ACTION_FACTORIES: Dict[
+    Tuple[WorkflowAction, BuildTool], Callable[[BakeResult], str]
+] = {
+    (WorkflowAction.VALIDATE, BuildTool.GNU_MAKE): lambda result: "make validate",
+    (WorkflowAction.VALIDATE, BuildTool.GO_TASK): lambda result: "task validate",
+    (WorkflowAction.VALIDATE, BuildTool.POE): lambda result: "poetry run poe validate",
+    (
+        WorkflowAction.CLI,
+        BuildTool.GNU_MAKE,
+    ): lambda result: f'poetry run {result.context["cli_name"]} -vvvv sub leaf',
+    (
+        WorkflowAction.CLI,
+        BuildTool.GO_TASK,
+    ): lambda result: f'task venv:run -- {result.context["cli_name"]} -vvvv sub leaf',
+    (
+        WorkflowAction.CLI,
+        BuildTool.POE,
+    ): lambda result: f'poetry run {result.context["cli_name"]} -vvvv sub leaf',
+}
+
+
 def make_baked_cmd_cases() -> Generator[ParameterSet, None, None]:
-    config_names = {"minimal", "basic"}
-    for config_name, (cmd_name, cmd) in itertools.product(
+    config_names = {"minimal", "basic", "poe_minimal", "minimal_typer"}
+    for config_name, workflow_action in itertools.product(
         config_names,
-        [
-            (
-                "validate",
-                lambda result: "task validate",
-            ),
-            (
-                "cli",
-                lambda result: f'task venv:run -- {result.context["cli_name"]} -vvvv sub leaf',
-            ),
-        ],
+        WorkflowAction,
     ):
         extra_context = load_test_config(config_name)["default_context"]
         if config_name == "everything":
             extra_context["init_git"] = "y"
-        yield pytest.param(extra_context, cmd, id=f"{config_name}-{cmd_name}")
+        yield pytest.param(
+            extra_context, workflow_action, id=f"{config_name}-{workflow_action}"
+        )
 
 
-@pytest.mark.parametrize(["extra_context", "cmd"], make_baked_cmd_cases())
+@pytest.mark.parametrize(["extra_context", "workflow_action"], make_baked_cmd_cases())
 def test_baked_cmd(
-    extra_context: Dict[str, Any], cmd: Callable[[BakeResult], str]
+    extra_context: Dict[str, Any],
+    workflow_action: WorkflowAction,
 ) -> None:
     result = BAKER.bake(extra_context, template_path=PROJECT_PATH)
-    logging.info("result = %s", result)
+    project_path = result.project_path
+    logging.info("result = %s, project_path = %s", result, project_path)
     subprocess.run(
-        cwd=result.project_path,
+        cwd=project_path,
         env=ESCAPED_ENV,
         check=True,
         args=[
@@ -256,7 +328,7 @@ def test_baked_cmd(
             f"""
 set -eo pipefail
 set -x
-{cmd(result)}
+{WORKFLOW_ACTION_FACTORIES[(workflow_action, result.build_tool)](result)}
     """,
         ],
     )

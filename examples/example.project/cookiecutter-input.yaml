@@ -1,7 +1,8 @@
 default_context:
   build_tool: go-task
   cli_name: example.project-cli
-  init_git: n
+  git_commit: y
+  git_init: y
   project_dirname: example.project
   project_name: example.project
   project_short_description: example.project
@@ -9,6 +10,7 @@ default_context:
   python_package_fqname: example.project
   python_version: '3.7'
   sdpx_license_identifier: UNLICENSED
-  use_poetry_dynamic_versioning: y
+  use_oci_devtools: n
+  use_poetry_dynamic_versioning: n
   variant: basic
   version: 0.0.0

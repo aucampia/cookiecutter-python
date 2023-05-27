@@ -35,7 +35,7 @@ tasks:
   mypy:
     desc: Run mypy
     cmds:
-      - "{{.RUN_PYTHON}} -m mypy --show-error-context --show-error-codes"
+      - "{{.RUN_PYTHON}} -m mypy --show-error-context --show-error-codes {{.CLI_ARGS}}"
   codespell:
     desc: Run codespell
     cmds:
@@ -45,8 +45,7 @@ tasks:
     cmds:
       - |
         {{.POETRY}} export --without-hashes --with dev --format requirements.txt | \
-          {{.RUN_PYTHON}} -m pip_audit --requirement /dev/stdin --no-deps --strict --desc on \
-            --ignore-vuln GHSA-2p9h-ccw7-33gf
+          {{.RUN_PYTHON}} -m pip_audit --requirement /dev/stdin --no-deps --strict --desc on
   test:
     desc: Run tests
     cmds:
@@ -73,6 +72,11 @@ tasks:
     cmds:
       - task: validate:static
       - task: test
+  fix-and-validate:
+    desc: Perform all validation
+    cmds:
+      - task: validate:fix
+      - task: validate
   clean:
     desc: Clean everything
     cmds:

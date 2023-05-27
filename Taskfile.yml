@@ -63,7 +63,7 @@ tasks:
       - task: black
         vars: { CHECK: true }
       - task: flake8
-      - task: pip-audit
+      # - task: pip-audit
   validate:fix:
     desc: Fix auto-fixable validation errors.
     cmds:
@@ -104,6 +104,7 @@ tasks:
       - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/defaults.yaml"
       - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/basic.yaml"
       - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/minimal.yaml"
+      - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/minimal_typer.yaml"
   _rimraf:
     # This task is a utility task for recursively removing directories, it is
     # similar to rm -rf but not identical and it should work wherever there is

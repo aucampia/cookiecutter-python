@@ -8,9 +8,10 @@
   "sdpx_license_identifier": "UNLICENSED",
   "version": "0.0.0",
   "python_version": "3.7",
-  "init_git": "y",
-  "variant": ["basic", "minimal"],
-  "build_tool": ["gnu-make", "go-task"],
+  "git_init": "y",
+  "git_commit": "y",
+  "variant": ["basic", "minimal", "minimal_typer"],
+  "build_tool": ["gnu-make", "go-task", "poe"],
   "use_poetry_dynamic_versioning": "n",
   "use_oci_devtools": "n"
 }
