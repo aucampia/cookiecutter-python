@@ -18,7 +18,7 @@ RUN \
 FROM docker.io/mikefarah/yq:4 as yq
 
 # ... 
-FROM docker.io/library/python:3.7 AS python
+FROM docker.io/library/python:3.9 AS python
 
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]

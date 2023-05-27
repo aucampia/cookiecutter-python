@@ -8,7 +8,7 @@ default_context:
   project_short_description: example.project.minimal_typer
   project_url: https://example.com/project
   python_package_fqname: example.project.minimal_typer
-  python_version: '3.7'
+  python_version: '3.9'
   sdpx_license_identifier: UNLICENSED
   use_oci_devtools: n
   use_poetry_dynamic_versioning: n
