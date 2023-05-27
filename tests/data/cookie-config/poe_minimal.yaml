@@ -1,0 +1,6 @@
+default_context:
+  project_name: "example.project.poe_minimal"
+  init_git: "n"
+  use_poetry_dynamic_versioning: "n"
+  variant: minimal
+  build_tool: poe

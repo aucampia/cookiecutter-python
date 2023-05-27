@@ -1,0 +1,93 @@
+# https://python-poetry.org/docs/pyproject/
+# https://www.python.org/dev/peps/pep-0621/
+[tool.poetry]
+name = "example.project.minimal_typer"
+version = "0.0.0"
+description = ""
+authors = []
+license = "UNLICENSED"
+readme = "README.md"
+packages = [
+    {include = "*", from = "src"},
+]
+
+[tool.poetry.scripts]
+"example.project.minimal_typer-cli" = "example.project.minimal_typer.cli:main"
+
+
+[tool.poetry.dependencies]
+python = "^3.7"
+pydantic = ">=1"
+PyYAML = ">=6"
+# 
+typer = "0.7.0"
+# 
+# 
+
+[tool.poetry.group.dev.dependencies]
+black = ">=22"
+codespell = ">=2,<2.2"
+flake8 = ">=4"
+flake8-black = ">=0"
+flake8-bugbear = ">=22"
+flake8-isort = ">=4"
+flake8-bandit = ">=2"
+isort = ">=5"
+mypy = ">=0"
+pep8-naming = ">=0"
+pycln = ">=1"
+pytest = ">=7"
+pytest-cov = ">=3"
+safety = ">=1"
+types-click = ">=7"
+types-PyYAML = ">=6"
+typing-extensions = ">=4"
+pip-audit = ">=2"
+# 
+
+[tool.coverage.report]
+# https://coverage.readthedocs.io/en/coverage-5.0/config.html
+show_missing = true
+
+[tool.isort]
+# https://pycqa.github.io/isort/docs/configuration/config_files.html
+profile = "black"
+src_paths = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--cov-config=pyproject.toml", "--cov=src"]
+# https://docs.pytest.org/en/stable/customize.html
+# https://docs.pytest.org/en/stable/reference.html#configuration-options
+log_format = "%(asctime)s %(process)d %(thread)d %(levelno)03d:%(levelname)-8s %(name)-12s %(module)s:%(lineno)s:%(funcName)s %(message)s"
+log_date_format = "%Y-%m-%dT%H:%M:%S"
+log_cli_format = "%(asctime)s %(process)d %(thread)d %(levelno)03d:%(levelname)-8s %(name)-12s %(module)s:%(lineno)s:%(funcName)s %(message)s"
+log_cli_date_format = "%Y-%m-%dT%H:%M:%S"
+
+[tool.mypy]
+# https://mypy.readthedocs.io/en/stable/config_file.html
+files = "src,tests"
+mypy_path = "src"
+python_version = "3.7"
+strict = true
+warn_unreachable = true
+warn_unused_configs = true
+explicit_package_bases = true
+namespace_packages = true
+plugins = ["pydantic.mypy"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
+
+# 
+
+# 
+
+[build-system]
+# 
+requires = ["setuptools","poetry-core>=1.0.0"]
+# 
+build-backend = "poetry.core.masonry.api"

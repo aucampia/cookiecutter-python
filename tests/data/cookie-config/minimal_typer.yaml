@@ -1,0 +1,6 @@
+default_context:
+  project_name: "example.project.minimal_typer"
+  init_git: "n"
+  use_poetry_dynamic_versioning: "n"
+  variant: minimal_typer
+  build_tool: go-task
