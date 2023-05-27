@@ -84,7 +84,7 @@ def hash_path(
     hasher = hash()
     for _dirpath, dirnames, filenames in os.walk(root):
         dirpath = Path(_dirpath)
-        logging.info("exclude_subdirs = %s", exclude_subdirs)
+        logging.debug("exclude_subdirs = %s", exclude_subdirs)
         for dirname in list(dirnames):
             relative_dirname = (dirpath / dirname).relative_to(root)
             logging.debug("relative_dirname = %s", relative_dirname)
@@ -92,9 +92,9 @@ def hash_path(
                 dirnames.remove(dirname)
         dirnames.sort()
         filenames.sort()
-        logging.info("dirpath = %s", dirpath)
-        logging.info("dirnames = %s", dirnames)
-        logging.info("filenames = %s", filenames)
+        logging.debug("dirpath = %s", dirpath)
+        logging.debug("dirnames = %s", dirnames)
+        logging.debug("filenames = %s", filenames)
         for dirname in dirnames:
             subdir_path = dirpath / dirname
             hasher.update(str(subdir_path).encode("utf-8"))
@@ -155,37 +155,39 @@ class Baker:
         output_context_path = output_path.parent / f"{output_path.name}-context.json"
         output_project_path = output_path.parent / f"{output_path.name}-project.json"
 
-        if (
-            output_path.exists()
-            and (next(output_path.glob("*"), None) is not None)
-            and TEST_RAPID
-        ):
-            output_context = json.loads(output_context_path.read_text())
-            output_project = json.loads(output_project_path.read_text())
-            build_tool = BuildTool(output_context["build_tool"])
-            baked = BakeResult(
-                template_path,
-                template_path_hash,
-                frozendict(extra_context),
-                output_path,
-                Path(output_project),
-                output_context,
-                build_tool,
-            )
-            return baked
+        # if (
+        #     output_path.exists()
+        #     and (next(output_path.glob("*"), None) is not None)
+        #     and TEST_RAPID
+        # ):
+        #     output_context = json.loads(output_context_path.read_text())
+        #     output_project = json.loads(output_project_path.read_text())
+        #     build_tool = BuildTool(output_context["build_tool"])
+        #     baked = BakeResult(
+        #         template_path,
+        #         template_path_hash,
+        #         frozendict(extra_context),
+        #         output_path,
+        #         Path(output_project),
+        #         output_context,
+        #         build_tool,
+        #     )
+        #     return baked
 
         output_path.mkdir(exist_ok=True, parents=True)
 
-        rmtree(
-            output_path,
-            ignore_errors=True,
-            onerror=lambda function, path, excinfo: logging.info(
-                "rmtree error: function = %s, path = %s, excinfo = %s",
-                function,
-                path,
-                excinfo,
-            ),
-        )
+        if not TEST_RAPID:
+            logging.info("cleaning output_path = %s", output_path)
+            rmtree(
+                output_path,
+                ignore_errors=True,
+                onerror=lambda function, path, excinfo: logging.info(
+                    "rmtree error: function = %s, path = %s, excinfo = %s",
+                    function,
+                    path,
+                    excinfo,
+                ),
+            )
 
         # Render the context, so that we can store it on the Result
         context: Dict[str, Any] = prompt_for_config(
@@ -203,6 +205,7 @@ class Baker:
             output_dir=str(output_path),
             # config_file=str(self._config_file),
             overwrite_if_exists=True if TEST_RAPID else False,
+            # overwrite_if_exists=True,
         )
         project_path = Path(project_dir)
 
@@ -253,6 +256,7 @@ poetry run poe validate-fix
                 ],
             )
         except Exception:
+            logging.error("failed to configure project, cleaning up %s", output_path)
             rmtree(
                 output_path,
                 ignore_errors=True,

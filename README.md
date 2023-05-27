@@ -61,8 +61,9 @@ diff -u -r \
 
 ## ...
 
-```
+```bash
 TEST_RAPID=true task test
+TEST_RAPID=true task test -- -rA 'tests/test_bake.py::test_baked_cmd' --log-cli-level INFO
 ```
 
 <!--
