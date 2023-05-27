@@ -7,11 +7,11 @@ import json
 import logging
 import os
 import pickle
-from shutil import rmtree
 import subprocess
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
+from shutil import rmtree
 from typing import Any, Callable, Dict, Generator, Mapping, Set, Tuple, TypeVar
 
 import pytest
