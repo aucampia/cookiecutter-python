@@ -8,7 +8,8 @@ import structlog
 import typer
 from structlog.types import FilteringBoundLogger, Processor
 
-from ._version import __version__
+from .._version import __version__
+from .sub import cli_sub
 
 logger: FilteringBoundLogger = structlog.get_logger(__name__)
 
@@ -21,8 +22,7 @@ https://typer.tiangolo.com/tutorial/options/
 """
 
 
-cli = typer.Typer()
-cli_sub = typer.Typer()
+cli = typer.Typer(pretty_exceptions_enable=False)
 cli.add_typer(cli_sub, name="sub")
 
 
@@ -53,30 +53,6 @@ def cli_callback(
 @cli.command("version")
 def cli_version(ctx: typer.Context) -> None:
     sys.stderr.write(f"{__version__}\n")
-
-
-@cli_sub.callback()
-def cli_sub_callback(ctx: typer.Context) -> None:
-
-    logger.debug(
-        "entry",
-        ctx_parent_params=({} if ctx.parent is None else ctx.parent.params),
-        ctx_params=ctx.params,
-    )
-
-
-@cli_sub.command("leaf")
-def cli_sub_leaf(
-    ctx: typer.Context,
-    name: Optional[str] = typer.Option("fake", "--name", "-n", help="The name ..."),
-    numbers: Optional[List[int]] = typer.Argument(None),
-) -> None:
-
-    logger.debug(
-        "entry",
-        ctx_parent_params=({} if ctx.parent is None else ctx.parent.params),
-        ctx_params=ctx.params,
-    )
 
 
 def main() -> None:
@@ -141,7 +117,7 @@ def setup_logging(console: bool = False) -> None:
     log_handler.setFormatter(formatter)
     root_logger = logging.getLogger("")
     root_logger.propagate = True
-    root_logger.setLevel(os.environ.get("PYLOGGING_LEVEL", logging.INFO))
+    root_logger.setLevel(os.environ.get("PYTHON_LOGGING_LEVEL", logging.INFO))
     root_logger.addHandler(log_handler)
 
 
