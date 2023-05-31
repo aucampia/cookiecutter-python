@@ -1,8 +1,13 @@
 # ...
 
 ```bash
+## from GitHub
 cookiecutter -v gh:aucampia/cookiecutter-python --overwrite-if-exists --output-dir var/baked/tmp
+cruft create https://github.com/aucampia/cookiecutter-python
 
+
+
+## from directory
 cookiecutter -vvvv ~/sw/d/github.com/aucampia/cookiecutter-python --overwrite-if-exists --no-input --config-file tests/data/cookie-config/basic.yaml --output-dir var/baked/tmp
 cruft create ~/sw/d/github.com/aucampia/cookiecutter-python
 

@@ -5,16 +5,6 @@ from typing import List, Optional
 import typer
 
 logger = logging.getLogger(__name__)
-
-"""
-https://click.palletsprojects.com/en/7.x/api/#parameters
-https://click.palletsprojects.com/en/7.x/options/
-https://click.palletsprojects.com/en/7.x/arguments/
-https://typer.tiangolo.com/
-https://typer.tiangolo.com/tutorial/options/
-"""
-
-
 cli_sub = typer.Typer()
 
 
