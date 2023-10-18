@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import logging
 import os
 import sys
-from typing import List, Optional
+from typing import Optional
 
 import structlog
 import typer
@@ -61,10 +63,10 @@ def main() -> None:
 
 
 def setup_logging(console: bool = False) -> None:
-    shared_processors: List[Processor] = []
+    shared_processors: list[Processor] = []
     structlog.configure(
-        processors=shared_processors
-        + [
+        processors=[
+            *shared_processors,
             structlog.stdlib.filter_by_level,
             structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
         ],

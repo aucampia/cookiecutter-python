@@ -1,4 +1,6 @@
 default_context:
+  _checkout: null
+  _repo_dir: ./
   build_tool: go-task
   cli_name: example.project.basic-cli
   git_commit: y

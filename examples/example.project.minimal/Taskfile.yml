@@ -80,7 +80,7 @@ tasks:
   clean:
     desc: Clean everything
     cmds:
-      - task: clean:mypy
+      - task: mypy:clean
       - task: venv:clean
   default:
     desc: Run validate
