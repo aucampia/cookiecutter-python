@@ -74,3 +74,10 @@ TEST_RAPID=true task test -- -rA 'tests/test_bake.py::test_baked_cmd' --log-cli-
 <!--
 MARK 000
 -->
+
+
+## syncdown
+
+```bash
+vimdiff ./Taskfile.yml ./link_project/Taskfile.yml
+```

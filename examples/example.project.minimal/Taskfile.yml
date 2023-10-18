@@ -20,18 +20,10 @@ tasks:
     desc: Run black
     cmds:
       - '{{.RUN_PYTHON}} -m black {{if (ne (.CHECK | default "false") "false")}}--check --diff {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
-  isort:
-    desc: Run isort
+  ruff:
+    desc: Run ruff
     cmds:
-      - '{{.RUN_PYTHON}} -m isort {{if (ne (.CHECK | default "false") "false")}}--check --diff {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
-  pycln:
-    desc: Run pycln
-    cmds:
-      - '{{.RUN_PYTHON}} -m pycln --config=pyproject.toml {{if (ne (.CHECK | default "false") "false")}}--check --diff{{end}} {{.CLI_ARGS | default .PY_SOURCE}}'
-  flake8:
-    desc: Run flake8
-    cmds:
-      - "{{.RUN_PYTHON}} -m flake8 {{.CLI_ARGS | default .PY_SOURCE}}"
+      - '{{.RUN_PREFIX}} ruff check --config pyproject.toml {{if (mustFromJson (.FIX | default "false"))}}--fix {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
   mypy:
     desc: Run mypy
     cmds:
@@ -55,17 +47,15 @@ tasks:
     cmds:
       - task: mypy
       # - task: codespell
-      - task: isort
-        vars: { CHECK: true }
       - task: black
         vars: { CHECK: true }
-      - task: flake8
+      - task: ruff
       # - task: pip-audit
   validate:fix:
     desc: Fix auto-fixable validation errors.
     cmds:
-      - task: pycln
-      - task: isort
+      - task: ruff
+        vars: { FIX: true }
       - task: black
   validate:
     desc: Perform all validation
@@ -77,27 +67,40 @@ tasks:
     cmds:
       - task: validate:fix
       - task: validate
+  poetry:clean:
+    desc: Clean poetry
+    cmds:
+      - "{{.POETRY}} env remove --all"
   clean:
     desc: Clean everything
     cmds:
-      - task: mypy:clean
-      - task: venv:clean
+      - task: _rimraf
+        vars: { RIMRAF_TARGET: ".mypy_cache" }
+      - task: _rimraf
+        vars: { RIMRAF_TARGET: ".pytest_cache" }
+      - task: _rimraf
+        vars: { RIMRAF_TARGET: ".venv" }
+      - task: poetry:clean
   default:
     desc: Run validate
     cmds:
       - task: validate
+  poetry:
+    desc: Run poetry
+    cmds:
+      - "{{.POETRY}} {{.CLI_ARGS}}"
   cli:
     desc: Run cli
     cmds:
-      - '{{.RUN_PREFIX}} example.project.minimal-cli {{.CLI_ARGS}}'
+      - "{{.RUN_PREFIX}} example.project.minimal-cli {{.CLI_ARGS}}"
   venv:run:
     desc: Run args in the venv
     cmds:
-      - '{{.RUN_PREFIX}} {{.CLI_ARGS}}'
+      - "{{.RUN_PREFIX}} {{.CLI_ARGS}}"
   venv:python:
     desc: Run python in the venv
     cmds:
-      - '{{.RUN_PYTHON}} {{.CLI_ARGS}}'
+      - "{{.RUN_PYTHON}} {{.CLI_ARGS}}"
   _rimraf:
     # This task is a utility task for recursively removing directories, it is
     # similar to rm -rf but not identical and it should work wherever there is

@@ -27,18 +27,6 @@ tasks:
     desc: Run black
     cmds:
       - '{{.RUN_PYTHON}} -m black {{if (ne (.CHECK | default "false") "false")}}--check --diff {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
-  # isort:
-  #   desc: Run isort
-  #   cmds:
-  #     - '{{.RUN_PYTHON}} -m isort {{if (ne (.CHECK | default "false") "false")}}--check --diff {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
-  # pycln:
-  #   desc: Run pycln
-  #   cmds:
-  #     - '{{.RUN_PYTHON}} -m pycln --config=pyproject.toml {{if (ne (.CHECK | default "false") "false")}}--check --diff{{end}} {{.CLI_ARGS | default .PY_SOURCE}}'
-  # flake8:
-  #   desc: Run flake8
-  #   cmds:
-  #     - "{{.RUN_PYTHON}} -m flake8 {{.CLI_ARGS | default .PY_SOURCE}}"
   ruff:
     desc: Run ruff
     cmds:
@@ -46,7 +34,7 @@ tasks:
   mypy:
     desc: Run mypy
     cmds:
-      - "{{.RUN_PYTHON}} -m mypy --show-error-context --show-error-codes"
+      - "{{.RUN_PYTHON}} -m mypy --show-error-context --show-error-codes {{.CLI_ARGS}}"
   codespell:
     desc: Run codespell
     cmds:
@@ -66,6 +54,8 @@ tasks:
     cmds:
       - task: mypy
       - task: codespell
+      - task: black
+        vars: { CHECK: true }
       - task: ruff
       # - task: pip-audit
   validate:fix:
@@ -79,6 +69,11 @@ tasks:
     cmds:
       - task: validate:static
       - task: test
+  fix-and-validate:
+    desc: Perform all validation
+    cmds:
+      - task: validate:fix
+      - task: validate
   poetry:clean:
     desc: Clean poetry
     cmds:
