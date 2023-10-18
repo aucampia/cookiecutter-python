@@ -42,7 +42,7 @@ tasks:
   ruff:
     desc: Run ruff
     cmds:
-      - '{{.RUN_PREFIX}} ruff check --config pyproject.toml {{if not (eq (.CHECK | default "false") "false")}}--fix {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
+      - '{{.RUN_PREFIX}} ruff check --config pyproject.toml {{if (mustFromJson (.FIX | default "false"))}}--fix {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
   mypy:
     desc: Run mypy
     cmds:
@@ -67,12 +67,12 @@ tasks:
       - task: mypy
       - task: codespell
       - task: ruff
-        vars: { CHECK: true }
       # - task: pip-audit
   validate:fix:
     desc: Fix auto-fixable validation errors.
     cmds:
       - task: ruff
+        vars: { FIX: true }
       - task: black
   validate:
     desc: Perform all validation

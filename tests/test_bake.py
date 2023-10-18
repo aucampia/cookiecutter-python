@@ -107,9 +107,7 @@ def hash_path(
     return hasher.hexdigest()
 
 
-def hash_object(
-    object: Any, hash: Callable[[], hashlib._Hash] = hashlib.sha256
-) -> str:
+def hash_object(object: Any, hash: Callable[[], hashlib._Hash] = hashlib.sha256) -> str:
     pickled = pickle.dumps(object)
     hasher = hash()
     hasher.update(pickled)

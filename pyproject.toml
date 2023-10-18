@@ -61,6 +61,8 @@ ignore = [
     "E203", # whitespace before ':'
     "E231", # missing whitespace after ','
     "E251", # Unexpected spaces around keyword / parameter equals
+    # Disabled because this targets Python 3.9 or later
+    "UP007", # Use `X | Y` for type annotations
 ]
 
 extend-exclude = [
