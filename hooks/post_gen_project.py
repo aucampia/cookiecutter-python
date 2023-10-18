@@ -12,9 +12,10 @@ import os.path
 import shutil
 import subprocess
 import sys
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping, Set
+from typing import Any
 
 # https://cookiecutter.readthedocs.io/en/latest/advanced/hooks.html
 
@@ -149,7 +150,7 @@ def apply() -> None:
     else:
         logger.info("Not writing %s as it already exists", cookiecutter_input_path)
 
-    remove_files: Set[str] = set(itertools.chain(*BUILD_TOOL_FILES.values()))
+    remove_files: set[str] = set(itertools.chain(*BUILD_TOOL_FILES.values()))
     remove_files -= BUILD_TOOL_FILES.get(answers.build_tool, set())
     logger.info("removing unused build files %s", remove_files)
     for remove_file in remove_files:

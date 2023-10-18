@@ -9,10 +9,11 @@ import os
 import pickle
 import subprocess
 import tempfile
+from collections.abc import Generator, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from shutil import rmtree
-from typing import Any, Callable, Dict, Generator, Mapping, Set, Tuple, TypeVar
+from typing import Any, Callable, TypeVar
 
 import pytest
 import yaml
@@ -29,7 +30,7 @@ PROJECT_PATH = SCRIPT_PATH.parent.parent
 TEST_DATA_PATH = SCRIPT_PATH.parent / "data"
 
 
-def load_test_config(name: str) -> Dict[str, Any]:
+def load_test_config(name: str) -> dict[str, Any]:
     config = yaml.safe_load(
         (TEST_DATA_PATH / "cookie-config" / f"{name}.yaml").read_text()
     )
@@ -39,7 +40,7 @@ def load_test_config(name: str) -> Dict[str, Any]:
     return config
 
 
-def escape_venv(environ: Mapping[str, str]) -> Dict[str, str]:
+def escape_venv(environ: Mapping[str, str]) -> dict[str, str]:
     result = {**environ}
     virtual_env_path = Path(result["VIRTUAL_ENV"])
     ospath_parts = result["PATH"].split(os.pathsep)
@@ -66,7 +67,7 @@ class BakeKey:
 class BakeResult(BakeKey):
     output_path: Path
     project_path: Path
-    context: Dict[str, Any]
+    context: dict[str, Any]
     build_tool: BuildTool
 
 
@@ -78,8 +79,8 @@ assert isinstance(TEST_RAPID, bool)
 
 def hash_path(
     root: Path,
-    exclude_subdirs: Set[str],
-    hash: Callable[[], "hashlib._Hash"] = hashlib.sha256,
+    exclude_subdirs: set[str],
+    hash: Callable[[], hashlib._Hash] = hashlib.sha256,
 ) -> str:
     hasher = hash()
     for _dirpath, dirnames, filenames in os.walk(root):
@@ -107,7 +108,7 @@ def hash_path(
 
 
 def hash_object(
-    object: Any, hash: Callable[[], "hashlib._Hash"] = hashlib.sha256
+    object: Any, hash: Callable[[], hashlib._Hash] = hashlib.sha256
 ) -> str:
     pickled = pickle.dumps(object)
     hasher = hash()
@@ -120,9 +121,9 @@ ESCAPED_ENV = escape_venv(os.environ)
 
 class Baker:
     def __init__(self) -> None:
-        self._baked: Dict[BakeKey, BakeResult] = {}
+        self._baked: dict[BakeKey, BakeResult] = {}
 
-    def bake(self, extra_context: Dict[str, Any], template_path: Path) -> BakeResult:
+    def bake(self, extra_context: dict[str, Any], template_path: Path) -> BakeResult:
         context_file = template_path / "cookiecutter.json"
 
         if TEST_RAPID:
@@ -190,7 +191,7 @@ class Baker:
             )
 
         # Render the context, so that we can store it on the Result
-        context: Dict[str, Any] = prompt_for_config(
+        context: dict[str, Any] = prompt_for_config(
             generate_context(
                 context_file=str(context_file), extra_context=extra_context
             ),
@@ -279,8 +280,8 @@ class WorkflowAction(enum.Enum):
     CLI = "cli"
 
 
-WORKFLOW_ACTION_FACTORIES: Dict[
-    Tuple[WorkflowAction, BuildTool], Callable[[BakeResult], str]
+WORKFLOW_ACTION_FACTORIES: dict[
+    tuple[WorkflowAction, BuildTool], Callable[[BakeResult], str]
 ] = {
     (WorkflowAction.VALIDATE, BuildTool.GNU_MAKE): lambda result: "make validate",
     (WorkflowAction.VALIDATE, BuildTool.GO_TASK): lambda result: "task validate",
@@ -316,7 +317,7 @@ def make_baked_cmd_cases() -> Generator[ParameterSet, None, None]:
 
 @pytest.mark.parametrize(["extra_context", "workflow_action"], make_baked_cmd_cases())
 def test_baked_cmd(
-    extra_context: Dict[str, Any],
+    extra_context: dict[str, Any],
     workflow_action: WorkflowAction,
 ) -> None:
     result = BAKER.bake(extra_context, template_path=PROJECT_PATH)

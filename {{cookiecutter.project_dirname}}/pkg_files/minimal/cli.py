@@ -4,7 +4,6 @@ import logging
 import os
 import sys
 from dataclasses import dataclass, field
-from typing import List
 
 from ._version import __version__
 
@@ -38,7 +37,7 @@ class Application:
         current_parser.set_defaults(handler=self.cli_sub_leaf)
         current_parser.add_argument("target", nargs="*", type=str)
 
-    def run(self, args: List[str]) -> None:
+    def run(self, args: list[str]) -> None:
         parse_result = self.parser.parse_args(args)
 
         verbosity = parse_result.verbosity

@@ -2,7 +2,7 @@
 import logging
 import os
 import sys
-from typing import List, Optional
+from typing import Optional
 
 import structlog
 import typer
@@ -61,7 +61,7 @@ def main() -> None:
 
 
 def setup_logging(console: bool = False) -> None:
-    shared_processors: List[Processor] = []
+    shared_processors: list[Processor] = []
     structlog.configure(
         processors=shared_processors
         + [

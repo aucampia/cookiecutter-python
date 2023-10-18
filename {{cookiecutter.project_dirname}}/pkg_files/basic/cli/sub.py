@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from typing import List, Optional
+from typing import Optional
 
 import structlog
 import typer
@@ -32,7 +32,7 @@ def cli_sub_callback(ctx: typer.Context) -> None:
 def cli_sub_leaf(
     ctx: typer.Context,
     name: Optional[str] = typer.Option("fake", "--name", "-n", help="The name ..."),
-    numbers: Optional[List[int]] = typer.Argument(None),
+    numbers: Optional[list[int]] = typer.Argument(None),
 ) -> None:
     logger.debug(
         "entry",
