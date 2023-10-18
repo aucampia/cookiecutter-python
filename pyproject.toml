@@ -14,15 +14,7 @@ PyYAML = "^6.0.1"
 [tool.poetry.group.dev.dependencies]
 black = "^23.10.0"
 codespell = "^2.2.6"
-# flake8 = "^6.1.0"
-# # flake8-black = ">=0"
-# flake8-bugbear = "^23.9.16"
-# flake8-isort = "^6.1.0"
-# flake8-bandit = "^4.1.1"
-# isort = "^5.12.0"
 mypy = "^1.6.1"
-# pep8-naming = "^0.13.3"
-# pycln = "^2.3.0"
 pytest = "^7.4.2"
 pytest-cookies = "^0.7.0"
 pytest-cov = "^4.1.0"
@@ -33,7 +25,6 @@ frozendict = "^2.3.8"
 types-frozendict = "^2.0.9"
 pip-audit = "^2.6.1"
 ruff = "^0.1.0"
-
 
 [tool.poetry.group.templates.dependencies]
 typer = "^0.9.0"
