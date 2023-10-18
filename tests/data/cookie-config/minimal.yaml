@@ -1,6 +1,6 @@
 default_context:
   project_name: "example.project.minimal"
-  init_git: "n"
+  git_init: "n"
   use_poetry_dynamic_versioning: "n"
   variant: minimal
   build_tool: go-task

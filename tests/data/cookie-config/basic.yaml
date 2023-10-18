@@ -1,5 +1,5 @@
 default_context:
   project_name: "example.project.basic"
-  init_git: "n"
+  git_init: "n"
   variant: basic
   build_tool: go-task

@@ -71,12 +71,13 @@ class Answers:
 
     @classmethod
     def from_mapping(cls, values: Mapping[str, Any]) -> Answers:
+        logging.debug("values = %s", values)
         return cls(
             python_package_fqname=values["python_package_fqname"],
             variant=Variant(values["variant"]),
             build_tool=BuildTool(values["build_tool"]),
-            git_init=values["git_init"],
-            git_commit=values["git_commit"],
+            git_init=cls._read_yn(values["git_init"]),
+            git_commit=cls._read_yn(values["git_commit"]),
             use_oci_devtools=cls._read_yn(values["use_oci_devtools"]),
         )
 
@@ -158,6 +159,7 @@ def apply() -> None:
         (cwd_path / remove_file).unlink()
 
     if answers.git_init:
+        logger.info("Initializing git repo in %s", cwd_path)
         subprocess.run(["git", "init"])
 
 

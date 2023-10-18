@@ -4,7 +4,7 @@ default_context:
   build_tool: go-task
   cli_name: example.project.basic-cli
   git_commit: y
-  git_init: y
+  git_init: n
   project_dirname: example.project.basic
   project_name: example.project.basic
   project_short_description: example.project.basic
