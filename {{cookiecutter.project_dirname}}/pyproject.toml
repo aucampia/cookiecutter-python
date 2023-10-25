@@ -116,9 +116,8 @@ PYTHON_SOURCE="src tests"
 help = "perform static validation"
 sequence = [
     { cmd = "mypy --show-error-context --show-error-codes ${PYTHON_SOURCE}" },
-    { cmd = "isort --check --diff ${PYTHON_SOURCE}" },
     { cmd = "black --check --diff ${PYTHON_SOURCE}" },
-    { cmd = "flake8 ${PYTHON_SOURCE}" },
+    { cmd = "ruff check --config pyproject.toml ${PYTHON_SOURCE}" },
     # { shell = "poetry export --without-hashes --with dev --format requirements.txt | poetry run pip-audit --requirement /dev/stdin --no-deps --strict --desc on" },
 ]
 
@@ -131,8 +130,7 @@ sequence = [
 [tool.poe.tasks.validate-fix]
 help = "fix auto fixable validation errors"
 sequence = [
-    { cmd = "pycln --config=pyproject.toml ${PYTHON_SOURCE}" },
-    { cmd = "isort ${PYTHON_SOURCE}" },
+    { cmd = "ruff check --config pyproject.toml --fix ${PYTHON_SOURCE}" },
     { cmd = "black ${PYTHON_SOURCE}" },
 ]
 
