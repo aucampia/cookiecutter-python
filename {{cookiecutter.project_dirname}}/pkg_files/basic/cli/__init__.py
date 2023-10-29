@@ -33,14 +33,13 @@ def cli_callback(
     ctx: typer.Context, verbosity: int = typer.Option(0, "--verbose", "-v", count=True)
 ) -> None:
     if verbosity is not None:
-        root_logger = logging.getLogger("")
-        root_logger.propagate = True
+        logging.root.propagate = True
         new_level = (
-            root_logger.getEffectiveLevel()
+            logging.root.getEffectiveLevel()
             - (min(1, verbosity)) * 10
             - min(max(0, verbosity - 1), 9) * 1
         )
-        root_logger.setLevel(new_level)
+        logging.root.setLevel(new_level)
     logger.debug(
         "entry",
         ctx_parent_params=({} if ctx.parent is None else ctx.parent.params),
@@ -117,10 +116,9 @@ def setup_logging(console: bool = False) -> None:
     )
     log_handler = logging.StreamHandler(stream=sys.stderr)
     log_handler.setFormatter(formatter)
-    root_logger = logging.getLogger("")
-    root_logger.propagate = True
-    root_logger.setLevel(os.environ.get("PYTHON_LOGGING_LEVEL", logging.INFO))
-    root_logger.addHandler(log_handler)
+    logging.root.propagate = True
+    logging.root.setLevel(os.environ.get("PYTHON_LOGGING_LEVEL", logging.INFO))
+    logging.root.addHandler(log_handler)
 
 
 if __name__ == "__main__":
