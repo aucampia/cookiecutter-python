@@ -42,14 +42,13 @@ class Application:
 
         verbosity = parse_result.verbosity
         if verbosity is not None:
-            root_logger = logging.getLogger("")
-            root_logger.propagate = True
+            logging.root.propagate = True
             new_level = (
-                root_logger.getEffectiveLevel()
+                logging.root.getEffectiveLevel()
                 - (min(1, verbosity)) * 10
                 - min(max(0, verbosity - 1), 9) * 1
             )
-            root_logger.setLevel(new_level)
+            logging.root.setLevel(new_level)
 
         logging.debug(
             "sys.executable = %s, args = %s, parse_result = %s, logging.level = %s",

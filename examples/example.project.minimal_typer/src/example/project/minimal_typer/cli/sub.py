@@ -23,7 +23,7 @@ def cli_sub_callback(ctx: typer.Context) -> None:
 def cli_sub_leaf(
     ctx: typer.Context,
     name: Annotated[Optional[str], typer.Option("--name", "-n", help="The name ...")] = "fake",
-    numbers: Annotated[Optional[list[int]], typer.Argument()] = None,
+    numbers: Optional[list[int]] = typer.Argument(None),
 ) -> None:
     logger.debug(
         "entry: ctx_parent_params = %s, ctx_params = %s",

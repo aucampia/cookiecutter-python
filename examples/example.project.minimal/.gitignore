@@ -1,4 +1,5 @@
 *.dist-info/
+.ruff_cache/
 
 # vimdiff <(curl --silent https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore) .gitignore
 # Byte-compiled / optimized / DLL files
