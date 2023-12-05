@@ -154,11 +154,15 @@ def apply() -> None:
     remove_files: set[str] = set(itertools.chain(*BUILD_TOOL_FILES.values()))
     remove_files -= BUILD_TOOL_FILES.get(answers.build_tool, set())
     logger.info("removing unused build files %s", remove_files)
-    if answers.use_oci_devtools:
+    if not answers.use_oci_devtools:
         remove_files -= {"docker-compose.yaml", "devtools"}
     for remove_file in remove_files:
         logger.info("removing unused build file %s", remove_file)
-        shutil.rmtree(cwd_path / remove_file)
+        remove_path = cwd_path / remove_file
+        if remove_path.is_dir():
+            shutil.rmtree(remove_path)
+        else:
+            remove_path.unlink()
 
     if answers.git_init:
         logger.info("Initializing git repo in %s", cwd_path)
