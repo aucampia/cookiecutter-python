@@ -103,6 +103,8 @@ def apply() -> None:
 
     answers = Answers.from_mapping(cookiecutter)
 
+    logger.debug("answers = %s", answers)
+
     # namespace_parts: List[str] = COOKIECUTTER["python_package_fqname"].split(".")
     # variant = Variant(COOKIECUTTER["variant"])
     # build_tool = BuildTool(COOKIECUTTER["build_tool"])
@@ -155,7 +157,7 @@ def apply() -> None:
     remove_files -= BUILD_TOOL_FILES.get(answers.build_tool, set())
     logger.info("removing unused build files %s", remove_files)
     if not answers.use_oci_devtools:
-        remove_files -= {"docker-compose.yaml", "devtools"}
+        remove_files |= {"docker-compose.yaml", "devtools", "requirements-boot.in"}
     for remove_file in remove_files:
         logger.info("removing unused build file %s", remove_file)
         remove_path = cwd_path / remove_file
