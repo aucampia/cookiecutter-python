@@ -107,12 +107,16 @@ tasks:
   examples:
     desc: Build examples
     cmds:
-      - task: _rimraf
-        vars: { RIMRAF_TARGET: "examples" }
+      - task: examples:clean
       - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/defaults.yaml"
       - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/basic.yaml"
       - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/minimal.yaml"
       - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/minimal_typer.yaml"
+  examples:clean:
+    desc: Clean examples
+    cmds:
+      - task: _rimraf
+        vars: { RIMRAF_TARGET: "examples" }
   _rimraf:
     # This task is a utility task for recursively removing directories, it is
     # similar to rm -rf but not identical and it should work wherever there is

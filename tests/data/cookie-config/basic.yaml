@@ -3,3 +3,5 @@ default_context:
   git_init: "n"
   variant: basic
   build_tool: go-task
+  use_oci_devtools: "n"
+

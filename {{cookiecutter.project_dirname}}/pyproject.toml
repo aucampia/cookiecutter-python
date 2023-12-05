@@ -28,6 +28,7 @@ structlog = "^23.2.0"
 [tool.poetry.group.dev.dependencies]
 black = "^23.10.0"
 codespell = "^2.2.6"
+tomli = "^2.0.1"
 mypy = "^1.6.1"
 pytest = "^7.4.2"
 pytest-cov = "^4.1.0"
@@ -39,6 +40,8 @@ typing-extensions = "^4.8.0"
 poethepoet = "^0.24.1"
 # {% endif %}
 
+[tool.codespell]
+ignore-words = ".codespellignore"
 
 [tool.ruff]
 # https://beta.ruff.rs/docs/configuration/
