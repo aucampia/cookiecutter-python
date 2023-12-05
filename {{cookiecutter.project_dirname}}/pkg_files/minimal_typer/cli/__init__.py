@@ -26,7 +26,8 @@ cli.add_typer(cli_sub, name="sub")
 
 @cli.callback()
 def cli_callback(
-    ctx: typer.Context, verbosity: Annotated[int, typer.Option("--verbose", "-v", count=True)] = 0
+    ctx: typer.Context,
+    verbosity: Annotated[int, typer.Option("--verbose", "-v", count=True)] = 0,
 ) -> None:
     if verbosity is not None:
         logging.root.propagate = True
