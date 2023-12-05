@@ -1,0 +1,18 @@
+default_context:
+  _checkout: null
+  _repo_dir: ./
+  build_tool: go-task
+  cli_name: example.project.basic-cli
+  git_commit: y
+  git_init: n
+  project_dirname: example.project.basic
+  project_name: example.project.basic
+  project_short_description: example.project.basic
+  project_url: https://example.com/project
+  python_package_fqname: example.project.basic
+  python_version: '3.9'
+  sdpx_license_identifier: UNLICENSED
+  use_oci_devtools: n
+  use_poetry_dynamic_versioning: n
+  variant: basic
+  version: 0.0.0
