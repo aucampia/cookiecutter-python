@@ -22,7 +22,9 @@ def cli_sub_callback(ctx: typer.Context) -> None:
 @cli_sub.command("leaf")
 def cli_sub_leaf(
     ctx: typer.Context,
-    name: Annotated[Optional[str], typer.Option("--name", "-n", help="The name ...")] = "fake",
+    name: Annotated[
+        Optional[str], typer.Option("--name", "-n", help="The name ...")
+    ] = "fake",
     numbers: Optional[list[int]] = typer.Argument(None),
 ) -> None:
     logger.debug(

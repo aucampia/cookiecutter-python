@@ -5,6 +5,9 @@ description = ""
 license = "CC0-1.0"
 readme = "README.md"
 authors = []
+packages = [
+    {include = "hooks"},
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"

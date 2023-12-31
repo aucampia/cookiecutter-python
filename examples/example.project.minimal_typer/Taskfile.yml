@@ -46,7 +46,7 @@ tasks:
     desc: Perform static validation
     cmds:
       - task: mypy
-      # - task: codespell
+      - task: codespell
       - task: black
         vars: { CHECK: true }
       - task: ruff
