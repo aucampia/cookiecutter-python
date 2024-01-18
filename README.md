@@ -43,6 +43,13 @@ docker compose build
 docker compose run --rm python-devtools task help
 ```
 
+## updating
+
+
+```bash
+poetry up --latest
+vimdiff pyproject.toml link_project/pyproject.toml
+```
 
 ## monkey sync
 
