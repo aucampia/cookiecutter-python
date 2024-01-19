@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Annotated, Optional
+from typing import Optional
 
 import typer
 
