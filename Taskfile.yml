@@ -104,14 +104,40 @@ tasks:
     desc: Run python in the venv
     cmds:
       - "{{.RUN_PYTHON}} {{.CLI_ARGS}}"
-  examples:
-    desc: Build examples
+
+  example:generate:
+    desc: Generate an example
+    preconditions:
+      - sh: |
+          [ -n {{.EXAMPLE_NAME | default "" | shellQuote}} ]
+        msg: "EXAMPLE_NAME is required"
     cmds:
-      - task: examples:clean
-      - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/defaults.yaml"
-      - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/basic.yaml"
-      - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/minimal.yaml"
-      - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/minimal_typer.yaml"
+      - task: _rimraf
+        vars: { RIMRAF_TARGET: "examples/example.project.{{.EXAMPLE_NAME}}" }
+      - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/{{.EXAMPLE_NAME}}.yaml"
+  example:run:
+    desc: Run an example
+    preconditions:
+      - sh: |
+          [ -n {{.EXAMPLE_NAME | default "" | shellQuote}} ]
+        msg: "EXAMPLE_NAME is required"
+    cmds:
+      - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} install --sync)"
+      - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run task validate:fix validate)"
+      - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli --help)"
+      - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli sub leaf --help)"
+  examples:generate:
+    desc: Generate all examples
+    cmds:
+      - for: ['basic', 'defaults', 'minimal', 'minimal_typer']
+        task: example:generate
+        vars: { EXAMPLE_NAME: "{{.ITEM}}" }
+  examples:run:
+    desc: Run all examples
+    cmds:
+      - for: ['basic', 'defaults', 'minimal', 'minimal_typer']
+        task: example:run
+        vars: { EXAMPLE_NAME: "{{.ITEM}}" }
   examples:clean:
     desc: Clean examples
     cmds:

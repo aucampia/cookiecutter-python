@@ -1,7 +1,6 @@
 import logging
 
-
-from example.project import package_function
+from example.project.defaults import package_function
 
 
 def test_something() -> None:

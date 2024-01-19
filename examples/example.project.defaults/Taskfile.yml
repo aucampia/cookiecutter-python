@@ -92,7 +92,7 @@ tasks:
   cli:
     desc: Run cli
     cmds:
-      - "{{.RUN_PREFIX}} example.project-cli {{.CLI_ARGS}}"
+      - "{{.RUN_PREFIX}} example.project.defaults-cli {{.CLI_ARGS}}"
   venv:run:
     desc: Run args in the venv
     cmds:

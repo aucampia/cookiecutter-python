@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from typing import Optional
+from typing import Annotated, Optional
 
 import structlog
 import typer
@@ -33,7 +33,9 @@ def cli_sub_callback(ctx: typer.Context) -> None:
 @cli_sub.command("leaf")
 def cli_sub_leaf(
     ctx: typer.Context,
-    name: Optional[str] = typer.Option("fake", "--name", "-n", help="The name ..."),
+    namez: Annotated[
+        Optional[str], typer.Option("--namex", "-n", help="The name ...")
+    ] = "fake",
     numbers: Optional[list[int]] = typer.Argument(None),
 ) -> None:
     logger.debug(

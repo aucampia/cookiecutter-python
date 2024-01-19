@@ -2,14 +2,14 @@ default_context:
   _checkout: null
   _repo_dir: ./
   build_tool: go-task
-  cli_name: example.project-cli
+  cli_name: example.project.defaults-cli
   git_commit: y
   git_init: n
-  project_dirname: example.project
-  project_name: example.project
-  project_short_description: example.project
+  project_dirname: example.project.defaults
+  project_name: example.project.defaults
+  project_short_description: example.project.defaults
   project_url: https://example.com/project
-  python_package_fqname: example.project
+  python_package_fqname: example.project.defaults
   python_version: '3.9'
   sdpx_license_identifier: UNLICENSED
   use_oci_devtools: n
