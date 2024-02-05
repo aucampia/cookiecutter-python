@@ -1,5 +1,6 @@
 import logging
 
+
 from example.project.minimal import package_function
 
 

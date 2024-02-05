@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import distutils.dir_util
+# import distutils.dir_util
 import enum
 import itertools
 import json
@@ -121,15 +121,16 @@ def apply() -> None:
         pkg_files_path,
         namespace_path,
     )
-    distutils.dir_util.copy_tree(
-        str(pkg_files_path),
-        str(namespace_path),
-        preserve_mode=0,
-        preserve_times=0,
-        preserve_symlinks=1,
-        update=1,
-        verbose=1,
-    )
+    # distutils.dir_util.copy_tree(
+    #     str(pkg_files_path),
+    #     str(namespace_path),
+    #     preserve_mode=0,
+    #     preserve_times=0,
+    #     preserve_symlinks=1,
+    #     update=1,
+    #     verbose=1,
+    # )
+    shutil.copytree(pkg_files_path, namespace_path, symlinks=True, dirs_exist_ok=True)
     logger.debug("will rmtree pkg_files_path %s", pkg_files_path.parent)
     shutil.rmtree(pkg_files_path.parent)
 
