@@ -19,6 +19,7 @@ codespell = "^2.2.6"
 mypy = "^1.9.0"
 pytest = "^8.1.1"
 pytest-cov = "^4.1.0"
+pytest-asyncio = "^0.23.5.post1"
 types-PyYAML = "^6.0.12.20240311"
 pip-audit = "^2.7.2"
 ruff = "^0.1.0"
@@ -96,6 +97,7 @@ log_format = "%(asctime)s %(process)d %(thread)d %(levelno)03d:%(levelname)-8s %
 log_date_format = "%Y-%m-%dT%H:%M:%S"
 log_cli_format = "%(asctime)s %(process)d %(thread)d %(levelno)03d:%(levelname)-8s %(name)-12s %(module)s:%(lineno)s:%(funcName)s %(message)s"
 log_cli_date_format = "%Y-%m-%dT%H:%M:%S"
+asyncio_mode = "auto"
 
 [tool.mypy]
 # https://mypy.readthedocs.io/en/stable/config_file.html
