@@ -250,6 +250,7 @@ poetry run poe validate-fix
     set -x
     set -eo pipefail
     # env | sort
+    poetry lock
     {configure_commands}
     """,
                 ],
