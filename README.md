@@ -48,6 +48,7 @@ docker compose run --rm python-devtools task help
 
 ```bash
 poetry up --latest
+code . --diff Taskfile.yml link_project/Taskfile.yml
 code . --diff pyproject.toml link_project/pyproject.toml
 code . --diff link_project/pkg_files/basic/cli/__init__.py link_project/pkg_files/minimal_typer/cli/__init__.py
 code . --diff link_project/pkg_files/basic/cli/sub.py link_project/pkg_files/minimal_typer/cli/sub.py

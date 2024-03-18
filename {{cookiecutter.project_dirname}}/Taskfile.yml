@@ -23,7 +23,7 @@ tasks:
   ruff:format:
     desc: Run ruff formatter
     cmds:
-      - '{{.RUN_PREFIX}} ruff format {{if (ne (.CHECK | default "false") "false")}}--check --diff {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
+      - '{{.RUN_PREFIX}} ruff format --config pyproject.toml {{if (ne (.CHECK | default "false") "false")}}--check --diff {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
   ruff:lint:
     desc: Run ruff linter
     cmds:
