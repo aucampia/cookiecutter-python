@@ -27,16 +27,11 @@ cli.add_typer(cli_sub, name="sub")
 @cli.callback()
 def cli_callback(
     ctx: typer.Context,
-    verbosity: int = typer.Option(0, "--verbose", "-v", count=True),
+    verbose: bool = typer.Option(False, "--verbose", "-v"),
 ) -> None:
-    if verbosity is not None:
+    if verbose:
         logging.root.propagate = True
-        new_level = (
-            logging.root.getEffectiveLevel()
-            - (min(1, verbosity)) * 10
-            - min(max(0, verbosity - 1), 9) * 1
-        )
-        logging.root.setLevel(new_level)
+        logging.root.setLevel(logging.DEBUG)
     logger.debug(
         "entry: ctx_parent_params = %s, ctx_params = %s",
         ({} if ctx.parent is None else ctx.parent.params),

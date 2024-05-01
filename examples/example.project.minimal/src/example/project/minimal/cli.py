@@ -21,9 +21,10 @@ class Application:
         parser.add_argument(
             "-v",
             "--verbose",
-            action="count",
-            dest="verbosity",
+            action="store_true",
+            dest="verbose",
             help="increase verbosity level",
+            default=False,
         )
         parser.add_argument(
             "--version", action="version", version=f"%(prog)s {__version__}"
@@ -40,15 +41,9 @@ class Application:
     def run(self, args: list[str]) -> None:
         parse_result = self.parser.parse_args(args)
 
-        verbosity = parse_result.verbosity
-        if verbosity is not None:
+        if parse_result.verbose:
             logging.root.propagate = True
-            new_level = (
-                logging.root.getEffectiveLevel()
-                - (min(1, verbosity)) * 10
-                - min(max(0, verbosity - 1), 9) * 1
-            )
-            logging.root.setLevel(new_level)
+            logging.root.setLevel(logging.DEBUG)
 
         logging.debug(
             "sys.executable = %s, args = %s, parse_result = %s, logging.level = %s",
