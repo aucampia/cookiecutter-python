@@ -96,3 +96,7 @@ MARK 000
 ```bash
 vimdiff ./Taskfile.yml ./link_project/Taskfile.yml
 ```
+
+```bash
+pipx run --spec=cruft cruft update
+```
