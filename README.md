@@ -47,6 +47,7 @@ docker compose run --rm python-devtools task help
 
 
 ```bash
+pipx upgrade-all
 poetry up --latest
 
 pipx run -q --spec=yq tomlq -r '.tool.poetry.dependencies | keys | .[] | select(. != "python") | (. + "@latest")' pyproject.toml | xargs -n1 echo poetry add
