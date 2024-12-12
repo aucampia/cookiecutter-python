@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional
+from typing import Annotated, Optional
 
 import typer
 
@@ -22,8 +22,10 @@ def cli_sub_callback(ctx: typer.Context) -> None:
 @cli_sub.command("leaf")
 def cli_sub_leaf(
     ctx: typer.Context,
-    name: Optional[str] = typer.Option(None, "--name", "-n", help="The name ..."),
-    numbers: Optional[list[int]] = typer.Argument(None),
+    name: Annotated[
+        Optional[str], typer.Option("--name", "-n", help="The name ...")
+    ] = None,
+    numbers: Annotated[Optional[list[int]], typer.Argument()] = None,
 ) -> None:
     logger.debug(
         "entry: ctx_parent_params = %s, ctx_params = %s",

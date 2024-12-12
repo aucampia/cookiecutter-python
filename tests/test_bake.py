@@ -332,7 +332,7 @@ def test_baked_cmd(
             f"""
 set -eo pipefail
 set -x
-{WORKFLOW_ACTION_FACTORIES[(workflow_action, result.build_tool)](result)}
+{WORKFLOW_ACTION_FACTORIES[workflow_action, result.build_tool](result)}
     """,
         ],
     )

@@ -3,6 +3,7 @@
 import logging
 import os
 import sys
+from typing import Annotated
 
 import typer
 
@@ -27,7 +28,7 @@ cli.add_typer(cli_sub, name="sub")
 @cli.callback()
 def cli_callback(
     ctx: typer.Context,
-    verbose: bool = typer.Option(False, "--verbose", "-v"),
+    verbose: Annotated[bool, typer.Option("--verbose", "-v")] = False,
 ) -> None:
     if verbose:
         logging.root.propagate = True
