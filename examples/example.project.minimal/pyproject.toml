@@ -18,8 +18,8 @@ packages = [
 python = "^3.9"
 pydantic = "^2.10.3"
 PyYAML = "^6.0.2"
-# 
-# 
+#
+#
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
@@ -32,7 +32,7 @@ types-PyYAML = "^6.0.12.20240917"
 pip-audit = "^2.7.3"
 ruff = "^0.8.2"
 typing-extensions = "^4.12.2"
-# 
+#
 
 [tool.codespell]
 ignore-words = ".codespellignore"
@@ -105,12 +105,12 @@ init_typed = true
 warn_required_dynamic_aliases = true
 warn_untyped_fields = true
 
-# 
+#
 
-# 
+#
 
 [build-system]
-# 
+#
 requires = ["setuptools","poetry-core>=1.0.0"]
-# 
+#
 build-backend = "poetry.core.masonry.api"
