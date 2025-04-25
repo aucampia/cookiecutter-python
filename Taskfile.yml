@@ -4,7 +4,7 @@
 version: "3"
 
 vars:
-  PYTHON: python
+  PYTHON: python3
   POETRY: "poetry"
   RUN_PREFIX: "{{.POETRY}} run"
   RUN_PYTHON: "{{.RUN_PREFIX}} python"

@@ -288,15 +288,15 @@ WORKFLOW_ACTION_FACTORIES: dict[
     (
         WorkflowAction.CLI,
         BuildTool.GNU_MAKE,
-    ): lambda result: f'poetry run {result.context["cli_name"]} -vvvv sub leaf 1 2 3',
+    ): lambda result: f"poetry run {result.context['cli_name']} -vvvv sub leaf 1 2 3",
     (
         WorkflowAction.CLI,
         BuildTool.GO_TASK,
-    ): lambda result: f'task venv:run -- {result.context["cli_name"]} -vvvv sub leaf 1 2 3',
+    ): lambda result: f"task venv:run -- {result.context['cli_name']} -vvvv sub leaf 1 2 3",
     (
         WorkflowAction.CLI,
         BuildTool.POE,
-    ): lambda result: f'poetry run {result.context["cli_name"]} -vvvv sub leaf 1 2 3',
+    ): lambda result: f"poetry run {result.context['cli_name']} -vvvv sub leaf 1 2 3",
 }
 
 

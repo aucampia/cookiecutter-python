@@ -16,24 +16,24 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pydantic = "^2.10.3"
+pydantic = "^2.11.3"
 PyYAML = "^6.0.2"
 # 
-typer = "^0.15.1"
+typer = "^0.15.2"
 # 
 # 
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.10.0"
-codespell = "^2.3.0"
-mypy = "^1.13.0"
-pytest = "^8.3.4"
-pytest-cov = "^6.0.0"
-pytest-asyncio = "^0.24.0"
-types-PyYAML = "^6.0.12.20240917"
-pip-audit = "^2.7.3"
-ruff = "^0.8.2"
-typing-extensions = "^4.12.2"
+black = "^25.1.0"
+codespell = "^2.4.1"
+mypy = "^1.15.0"
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+pytest-asyncio = "^0.26.0"
+types-PyYAML = "^6.0.12.20250402"
+pip-audit = "^2.9.0"
+ruff = "^0.11.7"
+typing-extensions = "^4.13.2"
 # 
 
 [tool.codespell]
@@ -68,6 +68,7 @@ ignore = [
     "E251", # Unexpected spaces around keyword / parameter equals
     # Disabled because this targets Python 3.9 or later
     "UP007", # Use `X | Y` for type annotations
+    "UP045", # Use `X | None` for type annotations
 ]
 
 [tool.ruff.lint.per-file-ignores]

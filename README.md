@@ -48,11 +48,14 @@ docker compose run --rm python-devtools task help
 
 ```bash
 pipx upgrade-all
+uv tool upgrade --all
 poetry up --latest
 
-pipx run -q --spec=yq tomlq -r '.tool.poetry.dependencies | keys | .[] | select(. != "python") | (. + "@latest")' pyproject.toml | xargs -n1 echo poetry add
+# pipx run -q --spec=yq tomlq -r '.tool.poetry.dependencies | keys | .[] | select(. != "python") | (. + "@latest")' pyproject.toml | xargs -n1 echo poetry add
+uv tool run -q --from=yq tomlq -r '.tool.poetry.dependencies | keys | .[] | select(. != "python") | (. + "@latest")' pyproject.toml | xargs -n1 echo poetry add
 
-pipx run -q --spec=yq tomlq -c '.tool.poetry.group | to_entries | .[] | [ "--group=" + .key, ((.value.dependencies | keys)[] | . + "@latest") ]' pyproject.toml | tr '\n' '\000' | xargs -0 -n1 bash -c 'echo "${1}" | jq -r ".[]" | xargs echo poetry add' --
+# pipx run -q --spec=yq tomlq -c '.tool.poetry.group | to_entries | .[] | [ "--group=" + .key, ((.value.dependencies | keys)[] | . + "@latest") ]' pyproject.toml | tr '\n' '\000' | xargs -0 -n1 bash -c 'echo "${1}" | jq -r ".[]" | xargs echo poetry add' --
+uv tool run -q --from=yq tomlq -c '.tool.poetry.group | to_entries | .[] | [ "--group=" + .key, ((.value.dependencies | keys)[] | . + "@latest") ]' pyproject.toml | tr '\n' '\000' | xargs -0 -n1 bash -c 'echo "${1}" | jq -r ".[]" | xargs echo poetry add' --
 
 code . --diff Taskfile.yml link_project/Taskfile.yml
 code . --diff pyproject.toml link_project/pyproject.toml
