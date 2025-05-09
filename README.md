@@ -6,7 +6,9 @@ cookiecutter -v gh:aucampia/cookiecutter-python --overwrite-if-exists --output-d
 cruft create https://github.com/aucampia/cookiecutter-python
 
 ## from directory
+uv tool install cookiecutter
 cookiecutter -vvvv ~/sw/d/github.com/aucampia/cookiecutter-python --overwrite-if-exists --no-input --config-file tests/data/cookie-config/basic.yaml --output-dir var/baked/tmp
+uv tool install cruft
 cruft create ~/sw/d/github.com/aucampia/cookiecutter-python
 
 ## ...
