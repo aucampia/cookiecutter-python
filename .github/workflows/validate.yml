@@ -49,7 +49,7 @@ jobs:
           set -x -Eeuo pipefail
           # printenv GITHUB_TOKEN | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker buildx create --name main --driver=docker-container --bootstrap --use
-          docker compose run --build --rm devtools task configure validate
+          docker compose run --build --rm devtools task configure validate:static
         env:
           DOCKER_BUILDKIT_CACHE_TO: "type=registry,ref=ghcr.io/${{ github.repository }}:cache,mode=max"
           DOCKER_BUILDKIT_CACHE_FROM: "type=registry,ref=ghcr.io/${{ github.repository }}:cache"

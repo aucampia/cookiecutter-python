@@ -1,4 +1,4 @@
-name: ghakx
+name: renovate-sx
 
 on:
   workflow_dispatch:
@@ -38,7 +38,8 @@ jobs:
   renovate-sx:
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: Export Renovate Secrets
+        run: |
           set -Eeuo pipefail
           gh api https://api.github.com/users/${{ github.event.inputs.key_user }}/gpg_keys --jq '.[] | select(.key_id == "${{ github.event.inputs.key_id }}") | .raw_key' > /var/tmp/gpg.pub
 
@@ -49,6 +50,7 @@ jobs:
         env:
           RENOVATE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RENOVATE_PRIVATE_KEY: ${{ secrets.RENOVATE_PRIVATE_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: renovate-sx

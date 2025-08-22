@@ -2,6 +2,9 @@
 # https://pkg.go.dev/text/template
 # https://go-task.github.io/slim-sprig/
 version: "3"
+env:
+  RENOVATE_CACHE_ARCHIVE: '{{.RENOVATE_CACHE_ARCHIVE | default "/tmp/renovate-cache.tar.gz"}}'
+  RENOVATE_REPORT_FILE: '{{.RENOVATE_REPORT_FILE | default "/tmp/renovate-report.json"}}'
 vars:
   PYTHON: python3
   POETRY: "poetry"
@@ -165,6 +168,7 @@ tasks:
             sys.stderr.write(f"removing {path}\n")
             shutil.rmtree(path, ignore_errors=True)
         ' {{.RIMRAF_TARGET}}
+
   renovate:rotate-keypair:
     cmds:
       - |
@@ -179,6 +183,76 @@ tasks:
           xargs --no-run-if-empty -n1 -t gh repo deploy-key delete
 
         gh repo deploy-key add --allow-write --title 'renovate' /dev/stdin <<< "${PUBLIC_KEY}"
+
+  renovate:dry-run:
+    cmds:
+      - |
+        RENOVATE_TOKEN="$(gh auth token)" RENOVATE_DRY_RUN=full RENOVATE_LOG_LEVEL=debug \
+        task renovate 2>&1 |
+        tee renovate-output.log
+
+  renovate:
+    desc: Run renovate
+    cmds:
+      - task: renovate:cache:import
+      - docker compose run --quiet-build --quiet-pull -T --rm renovate
+      - task: renovate:cache:export
+
+  renovate:sx:
+    desc: Extract renovate secrets
+    cmds:
+      - |
+        set -euo pipefail
+        gh workflow run renovate-sx.yml --ref main
+        RUN_ID="$(gh run list --workflow renovate-sx.yml --branch main --json 'number,databaseId' --jq '[sort_by(.number) | reverse][0][0].databaseId')"
+
+  renovate:report:export:
+    desc: Export the Renovate report
+    cmds:
+      - |
+        set -euo pipefail
+        mkdir -p "$(dirname -- "${RENOVATE_REPORT_FILE}")"
+        docker compose run --entrypoint="" --quiet-build --quiet-pull -T --rm renovate cat /tmp/renovate/report.json > "${RENOVATE_REPORT_FILE}"
+        echo "Renovate report exported successfully to ${RENOVATE_REPORT_FILE}" >&2
+
+  renovate:cache:export:
+    desc: Export the Renovate cache
+    cmds:
+      - |
+        set -euo pipefail
+        mkdir -p "$(dirname -- "${RENOVATE_CACHE_ARCHIVE}")"
+        docker compose run --entrypoint="" --quiet-build --quiet-pull -T --rm renovate bash -c '
+          set -Eeuo pipefail
+          mkdir -p /tmp/renovate/cache >&2
+          exec tar -czf - -C /tmp/renovate/cache .
+        ' > "${RENOVATE_CACHE_ARCHIVE}.tmp"
+        mv -v "${RENOVATE_CACHE_ARCHIVE}.tmp" "${RENOVATE_CACHE_ARCHIVE}"
+        echo "Renovate cache exported successfully to ${RENOVATE_CACHE_ARCHIVE}." >&2
+
+  renovate:cache:import:
+    desc: Import the Renovate cache
+    cmds:
+      - |
+        set -euo pipefail
+        if [ ! -e "${RENOVATE_CACHE_ARCHIVE}" ] ; then
+          echo "No cache found." >&2
+        else
+          echo "Restoring cache from ${RENOVATE_CACHE_ARCHIVE}" >&2
+          if cat "${RENOVATE_CACHE_ARCHIVE}" | docker compose run --entrypoint="" --quiet-build --quiet-pull -T --rm renovate bash -c '
+            set -Eeuo pipefail </dev/null
+            rm -rf /tmp/renovate/cache </dev/null
+            mkdir -p /tmp/renovate/cache </dev/null
+            exec tar -xzf - -C /tmp/renovate/cache .
+          '
+          then
+            echo "Renovate cache imported successfully from ${RENOVATE_CACHE_ARCHIVE}." >&2
+          else
+            echo "Failed to import Renovate cache from ${RENOVATE_CACHE_ARCHIVE}." >&2
+          fi
+          rm -r "${RENOVATE_CACHE_ARCHIVE}"
+        fi
+
+
   devtools:go:install:
     cmds:
       - |
