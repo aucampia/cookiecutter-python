@@ -58,5 +58,6 @@ RUN uv tool install \
 COPY --from=yq /usr/bin/yq /usr/local/bin/
 COPY --from=golang /usr/local/bin/goenv.sh /usr/local/bin/goenv.sh
 COPY --from=golang /usr/local/bin/task /usr/local/bin/task
-
+COPY --from=golang /usr/local/bin/yamlfmt /usr/local/bin/yamlfmt
+COPY --from=golang /usr/local/bin/shfmt /usr/local/bin/shfmt
 

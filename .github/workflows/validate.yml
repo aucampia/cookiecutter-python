@@ -1,4 +1,4 @@
-name: Renovate
+name: Validate
 
 on:
   push: {}
@@ -36,3 +36,6 @@ jobs:
           set -x -Eeuo pipefail
           docker buildx create --name main --driver=docker-container --bootstrap --use
           docker compose run --rm devtools task configure validate
+        env:
+          DOCKER_BUILDKIT_CACHE_TO: "type=registry,ref=ghcr.io/${{ github.repository }},mode=max"
+          DOCKER_BUILDKIT_CACHE_FROM: "type=registry,ref=ghcr.io/${{ github.repository }}"
