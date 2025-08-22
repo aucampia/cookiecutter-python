@@ -17,7 +17,7 @@ services:
     volumes:
       - .:/srv/workspace:z
       - ${XDG_CACHE_HOME:-xdg-cache-home}:/root/.cache
-      # - dot-venv:/srv/workspace/.venv
+      - dot-venv:/srv/workspace/.venv
       - dot-mypy-cache:/srv/workspace/.mypy_cache
       - dot-pytest-cache:/srv/workspace/.pytest_cache
       - dot-ruff-cache:/srv/workspace/.ruff_cache

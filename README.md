@@ -106,3 +106,12 @@ vimdiff ./Taskfile.yml ./link_project/Taskfile.yml
 ```bash
 pipx run --spec=cruft cruft update
 ```
+
+
+```bash
+GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name')"
+export DOCKER_BUILDKIT_CACHE_TO="type=registry,ref=ghcr.io/${GITHUB_REPOSITORY}:cache,mode=max"
+export DOCKER_BUILDKIT_CACHE_FROM="type=registry,ref=ghcr.io/${GITHUB_REPOSITORY}:cache"
+
+docker compose run --build --rm devtools task configure validate:static
+```

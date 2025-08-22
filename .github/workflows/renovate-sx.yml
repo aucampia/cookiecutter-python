@@ -15,9 +15,9 @@ on:
         description: 'The key ID to use for the GPG key'
         type: string
         default: '06AF686FB4F8CDB8'
-  # push:
-  #   branches:
-  #     - '**'
+        # push:
+        #   branches:
+        #     - '**'
 
 concurrency:
   group: >
