@@ -2,14 +2,12 @@
 # https://pkg.go.dev/text/template
 # https://go-task.github.io/slim-sprig/
 version: "3"
-
 vars:
   PYTHON: python3
   POETRY: "poetry"
   RUN_PREFIX: "{{.POETRY}} run"
   RUN_PYTHON: "{{.RUN_PREFIX}} python"
   PY_SOURCE: "hooks tests link_project/pkg_files"
-
 tasks:
   configure:
     desc: Configure this project
@@ -27,6 +25,10 @@ tasks:
     desc: Run black
     cmds:
       - '{{.RUN_PYTHON}} -m black {{if (ne (.CHECK | default "false") "false")}}--check --diff {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
+  yamlfmt:
+    desc: Run yamlfmt
+    cmds:
+      - yamlfmt {{if (ne (.CHECK | default "false") "false")}}-lint{{end}} {{.CLI_ARGS | default "."}}
   ruff:format:
     desc: Run ruff formatter
     cmds:
@@ -59,15 +61,18 @@ tasks:
       - task: mypy
       - task: codespell
       - task: ruff:format
-        vars: { CHECK: "true" }
+        vars: {CHECK: "true"}
       - task: ruff:lint
-      # - task: pip-audit
+      - task: yamlfmt
+        vars: {CHECK: "true"}
+        # - task: pip-audit
   validate:fix:
     desc: Fix auto-fixable validation errors.
     cmds:
       - task: ruff:lint
-        vars: { FIX: "true" }
+        vars: {FIX: "true"}
       - task: ruff:format
+      - task: yamlfmt
   validate:
     desc: Perform all validation
     cmds:
@@ -86,11 +91,11 @@ tasks:
     desc: Clean everything
     cmds:
       - task: _rimraf
-        vars: { RIMRAF_TARGET: ".mypy_cache" }
+        vars: {RIMRAF_TARGET: ".mypy_cache"}
       - task: _rimraf
-        vars: { RIMRAF_TARGET: ".pytest_cache" }
+        vars: {RIMRAF_TARGET: ".pytest_cache"}
       - task: _rimraf
-        vars: { RIMRAF_TARGET: ".venv" }
+        vars: {RIMRAF_TARGET: ".venv"}
       - task: poetry:clean
   default:
     desc: Run validate
@@ -108,7 +113,6 @@ tasks:
     desc: Run python in the venv
     cmds:
       - "{{.RUN_PYTHON}} {{.CLI_ARGS}}"
-
   example:generate:
     desc: Generate an example
     preconditions:
@@ -117,7 +121,7 @@ tasks:
         msg: "EXAMPLE_NAME is required"
     cmds:
       - task: _rimraf
-        vars: { RIMRAF_TARGET: "examples/example.project.{{.EXAMPLE_NAME}}" }
+        vars: {RIMRAF_TARGET: "examples/example.project.{{.EXAMPLE_NAME}}"}
       - "{{.RUN_PYTHON}} -m cookiecutter ./ -o examples --no-input --config-file tests/data/cookie-config/{{.EXAMPLE_NAME}}.yaml"
   example:run:
     desc: Run an example
@@ -135,18 +139,18 @@ tasks:
     cmds:
       - for: ['basic', 'defaults', 'minimal', 'minimal_typer']
         task: example:generate
-        vars: { EXAMPLE_NAME: "{{.ITEM}}" }
+        vars: {EXAMPLE_NAME: "{{.ITEM}}"}
   examples:run:
     desc: Run all examples
     cmds:
       - for: ['basic', 'defaults', 'minimal', 'minimal_typer']
         task: example:run
-        vars: { EXAMPLE_NAME: "{{.ITEM}}" }
+        vars: {EXAMPLE_NAME: "{{.ITEM}}"}
   examples:clean:
     desc: Clean examples
     cmds:
       - task: _rimraf
-        vars: { RIMRAF_TARGET: "examples" }
+        vars: {RIMRAF_TARGET: "examples"}
   _rimraf:
     # This task is a utility task for recursively removing directories, it is
     # similar to rm -rf but not identical and it should work wherever there is
@@ -161,3 +165,28 @@ tasks:
             sys.stderr.write(f"removing {path}\n")
             shutil.rmtree(path, ignore_errors=True)
         ' {{.RIMRAF_TARGET}}
+  renovate:rotate-keypair:
+    cmds:
+      - |
+        set -euo pipefail
+        PRIVATE_KEY="$(openssl genrsa 4096)"
+        PUBLIC_KEY="$(ssh-keygen -y -f /dev/stdin <<< "${PRIVATE_KEY}")"
+
+        gh secret set RENOVATE_PRIVATE_KEY <<< "${PRIVATE_KEY}"
+
+        gh repo deploy-key list --json 'title,id' |
+          jq -r '.[] | select(.title == "renovate") | .id' |
+          xargs --no-run-if-empty -n1 -t gh repo deploy-key delete
+
+        gh repo deploy-key add --allow-write --title 'renovate' /dev/stdin <<< "${PUBLIC_KEY}"
+  devtools:go:install:
+    cmds:
+      - |
+        set -euo pipefail
+        awk -F '"' '/_.*toolchain/{print $2}' devtools/tools.go | GOBIN="${HOME}/bin" xargs -t -I{} go install -C devtools {}
+  devtools:go:update:
+    cmds:
+      - |
+        set -euo pipefail
+        go get -C devtools/ -u .
+        go mod tidy -C devtools/

@@ -1,0 +1,51 @@
+{
+    // https://docs.renovatebot.com/self-hosted-experimental/
+    // https://docs.renovatebot.com/self-hosted-configuration/
+    //   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "platform": "github",
+    "repositoryCache": "enabled",
+    // The config is in the global config file (i.e. this file)
+    "requireConfig": "optional",
+    "onboarding": false,
+    "allowedCommands": [
+        ".*",
+    ],
+    // We use the report file to filter branches collected by the
+    // pre-push git hook. We only "touch" branches that have a report
+    // entry and was collected by the pre-push git hook.
+    "reportPath": "/tmp/renovate/report.json",
+    "reportType": "file",
+    // By default, Renovate will use `--no-verify` to skip git hooks
+    // when doing "commit" and "push", we are however using the pre-push
+    // git hook to collect modified branches so we can "touch" them to
+    // trigger the CI pipeline. This overwrites the default so that it's
+    // just "commit" that uses `--no-verify`.
+    "gitNoVerify": ["commit"],
+    "repositories": [
+        {
+            "repository": "aucampia/cookiecutter-python",
+            // https://docs.renovatebot.com/config-overview/
+            // https://docs.renovatebot.com/modules/manager/
+            "extends": [
+                "config:recommended"
+            ],
+            "vulnerabilityAlerts": {
+                // Unfortunately we can't access the GitHub Dependabot
+                // Alerts API using the GitHub Actions token. So this
+                // won't work. Disabling it to avoid errors.
+                "enabled": false,
+            },
+            "osvVulnerabilityAlerts": true,
+            "dependencyDashboardOSVVulnerabilitySummary": true,
+            "prConcurrentLimit": 3,
+            "enabledManagers": [
+                "pip-compile",
+                "poetry",
+                "github-actions",
+                "gomod",
+                "dockerfile",
+            ],
+            "packageRules": []
+        }
+    ]
+}

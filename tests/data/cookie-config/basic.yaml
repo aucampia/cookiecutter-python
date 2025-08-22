@@ -4,4 +4,3 @@ default_context:
   variant: basic
   build_tool: go-task
   use_oci_devtools: "n"
-

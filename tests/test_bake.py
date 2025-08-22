@@ -9,11 +9,11 @@ import os
 import pickle
 import subprocess
 import tempfile
-from collections.abc import Generator, Mapping
+from collections.abc import Callable, Generator, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from shutil import rmtree
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 import pytest
 import yaml
@@ -300,7 +300,7 @@ WORKFLOW_ACTION_FACTORIES: dict[
 }
 
 
-def make_baked_cmd_cases() -> Generator[ParameterSet, None, None]:
+def make_baked_cmd_cases() -> Generator[ParameterSet]:
     config_names = {"minimal", "basic", "poe_minimal", "minimal_typer"}
     for config_name, workflow_action in itertools.product(
         config_names,

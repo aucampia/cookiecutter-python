@@ -1,24 +1,31 @@
-# https://docs.docker.com/compose/compose-file/compose-file-v3/
-version: "3"
-
+# https://docs.docker.com/reference/compose-file/
+# https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
 services:
-  python-devtools:
+  devtools:
+    restart: never
+    profiles:
+      - devtools
     build:
+      # https://docs.docker.com/reference/compose-file/build/
       context: devtools
       dockerfile: Dockerfile
+      cache_to:
+        - ${DOCKER_BUILDKIT_CACHE_TO:-}
+      cache_from:
+        - ${DOCKER_BUILDKIT_CACHE_FROM:-}
     working_dir: /srv/workspace
     volumes:
       - .:/srv/workspace:z
       - ${XDG_CACHE_HOME:-xdg-cache-home}:/root/.cache
-      - dot-venv:/srv/workspace/.venv
+      # - dot-venv:/srv/workspace/.venv
       - dot-mypy-cache:/srv/workspace/.mypy_cache
       - dot-pytest-cache:/srv/workspace/.pytest_cache
+      - dot-ruff-cache:/srv/workspace/.ruff_cache
       - dot-tox:/srv/workspace/.tox
-
 volumes:
   xdg-cache-home: {}
   dot-venv: {}
   dot-mypy-cache: {}
   dot-pytest-cache: {}
+  dot-ruff-cache: {}
   dot-tox: {}
-

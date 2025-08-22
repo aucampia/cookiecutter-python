@@ -41,7 +41,8 @@ PYLOGGING_LEVEL=DEBUG cruft create ./ --overwrite-if-exists --no-input --config-
 
 ```bash
 docker compose build
-docker compose run --rm python-devtools task help
+docker compose run --rm devtools task help
+docker compose run --rm devtools task configure validate
 ```
 
 ## updating

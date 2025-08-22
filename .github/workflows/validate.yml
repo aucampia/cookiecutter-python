@@ -1,0 +1,38 @@
+name: Renovate
+
+on:
+  push: {}
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: >
+    ${{ github.repository }}-
+    ${{ github.workflow }}-
+    ${{ github.ref }}-
+    ${{ contains(fromJSON('["refs/heads/master", "refs/heads/main"]'), github.ref) && format( '{0}-{1}', github.run_id, github.sha ) || '' }}
+  cancel-in-progress: true
+
+env:
+  XDG_CACHE_HOME: ${{ github.workspace }}/.cache/xdg
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache xdg
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.XDG_CACHE_HOME }}
+          key: xdg-${{ github.job }}-v1-${{ hashFiles('**/*Dockerfile*', '**/go.sum', '**/pyproject.toml') }}
+          restore-keys: |
+            xdg-${{ github.job }}-v1
+            xdg-${{ github.job }}
+      - name: Run validation
+        run: |
+          set -x -Eeuo pipefail
+          docker buildx create --name main --driver=docker-container --bootstrap --use
+          docker compose run --rm devtools task configure validate

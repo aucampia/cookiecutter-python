@@ -1,4 +1,4 @@
-FROM golang:1.19-bullseye AS golang
+FROM docker.io/library/golang:1.25.0-alpine AS golang
 
 RUN \
     go env > /usr/local/bin/goenv.sh && \
@@ -15,14 +15,16 @@ RUN \
     find "${GOBIN}" && \
     true
 
-FROM docker.io/mikefarah/yq:4 as yq
+FROM docker.io/mikefarah/yq:4 AS yq
 
 # ... {% if False %}
-FROM docker.io/library/python:3.10 AS python
+FROM ghcr.io/astral-sh/uv:bookworm AS python
 # {% else %}{{"\n"}}FROM docker.io/library/python:{{ cookiecutter.python_version }} AS python{% endif %}
-
+ENTRYPOINT [  ]
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN echo mark=1
 
 RUN \
     apt-get update && \
@@ -38,19 +40,20 @@ RUN \
         libarchive-tools \
         jq \
         yq \
+        python-is-python3 \
         && \
     rm -vr /var/lib/apt/lists/* && \
     true
 
+ENV UV_PYTHON_BIN_DIR=/usr/local/bin
+
+RUN uv python install python3 python3.13
+
 COPY requirements.txt /var/tmp/build/requirements.txt
-RUN python3 -m pip install \
-        --no-cache-dir \
-        --require-hashes  \
-        --verbose \
-        --use-pep517 \
-        --requirement /var/tmp/build/requirements.txt && \
-    rm -rf /var/tmp/build/requirements.txt && \
-    true
+RUN uv tool install \
+    --constraints /var/tmp/build/requirements.txt \
+    --python=3.13 \
+    --with='poetry-plugin-up' poetry
 
 COPY --from=yq /usr/bin/yq /usr/local/bin/
 COPY --from=golang /usr/local/bin/goenv.sh /usr/local/bin/goenv.sh
