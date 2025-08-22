@@ -190,3 +190,13 @@ tasks:
         set -euo pipefail
         go get -C devtools/ -u .
         go mod tidy -C devtools/
+  ghcr:init:
+    env:
+      DOCKERFILE: |
+        FROM scratch
+        LABEL description="Empty Docker image"
+    cmds:
+      - |
+        GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name')"
+        echo "${DOCKERFILE}" | docker build -t ghcr.io/${GITHUB_REPOSITORY}:empty -f - .
+        docker push ghcr.io/${GITHUB_REPOSITORY}:empty

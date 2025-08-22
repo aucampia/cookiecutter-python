@@ -28,6 +28,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+      # Need to add repo here first:
+      # https://github.com/users/aucampia/packages/container/cookiecutter-python/settings
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -45,7 +47,7 @@ jobs:
       - name: Run validation
         run: |
           set -x -Eeuo pipefail
-          printenv GITHUB_TOKEN | docker login ghcr.io -u gh-token --password-stdin
+          # printenv GITHUB_TOKEN | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker buildx create --name main --driver=docker-container --bootstrap --use
           docker compose run --build --rm devtools task configure validate
         env:

@@ -113,5 +113,11 @@ GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .na
 export DOCKER_BUILDKIT_CACHE_TO="type=registry,ref=ghcr.io/${GITHUB_REPOSITORY}:cache,mode=max"
 export DOCKER_BUILDKIT_CACHE_FROM="type=registry,ref=ghcr.io/${GITHUB_REPOSITORY}:cache"
 
+declare -p GITHUB_REPOSITORY DOCKER_BUILDKIT_CACHE_TO DOCKER_BUILDKIT_CACHE_FROM
 docker compose run --build --rm devtools task configure validate:static
+```
+
+
+```bash
+
 ```
