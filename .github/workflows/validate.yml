@@ -40,7 +40,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.XDG_CACHE_HOME }}
-          key: xdg-${{ github.job }}-v1-${{ hashFiles('**/*Dockerfile*', '**/go.sum', '**/pyproject.toml') }}
+          key: "xdg-${{ github.job }}-v1-${{ hashFiles('**/*Dockerfile*', '**/go.sum', '**/pyproject.toml') }}"
           restore-keys: |
             xdg-${{ github.job }}-v1
             xdg-${{ github.job }}
