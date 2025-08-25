@@ -35,8 +35,8 @@ jobs:
           echo >> ~/.ssh/id_rsa
           sudo chmod go-rwx ~/
 
-          echo "Installing and starting the SSH server"
-          sudo apt-get install -y openssh-server
+          echo "Starting the SSH server"
+          # sudo apt-get install -y openssh-server
           sudo mkdir -vp /run/sshd
           sudo /usr/sbin/sshd -D &
 
