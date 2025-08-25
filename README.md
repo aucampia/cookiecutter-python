@@ -132,5 +132,5 @@ export TUNNEL_SESSION_ID="$(ngrok api tunnel-sessions list | jq -r '[.tunnel_ses
 export TUNNEL_PUBLIC_URL="$(ngrok api tunnels list | jq -r '[.tunnels[] | select(.tunnel_session.id == env.TUNNEL_SESSION_ID) | .public_url | sub("^tcp://"; "")][0]' | tee /dev/stderr)"
 export TUNNEL_HOST="${TUNNEL_PUBLIC_URL%%:*}"
 export TUNNEL_PORT="${TUNNEL_PUBLIC_URL##*:}"
-ssh -p "${TUNNEL_PORT}" "${TUNNEL_HOST}"
+ssh -p "${TUNNEL_PORT}" runner@"${TUNNEL_HOST}"
 ```
