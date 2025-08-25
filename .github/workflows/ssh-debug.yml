@@ -27,10 +27,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-      - run: |
+      - name: Start sshd
+        run: |
           set -xEeuo pipefail
 
           declare -p > ~/runner.env
+          mkdir -vp ~/.ssh/
+          declare -p NGROK_SSH_PRIVATE_KEY > ~/.ssh/id_rsa
           sudo chmod go-rwx ~/
 
           echo "Installing and starting the SSH server"
@@ -45,3 +48,5 @@ jobs:
           cat ~/.ssh/authorized_keys
 
           ssh -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null -o ControlPath=none -R 0:localhost:22 v2@connect.ngrok-agent.com tcp
+        env:
+          NGROK_SSH_PRIVATE_KEY: ${{ secrets.NGROK_SSH_PRIVATE_KEY }}
