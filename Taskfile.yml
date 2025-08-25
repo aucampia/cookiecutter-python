@@ -194,7 +194,7 @@ tasks:
   renovate:
     desc: Run renovate
     cmds:
-      - task: renovate:cache:import
+      # - task: renovate:cache:import
       - docker compose run --quiet-build --quiet-pull -T --rm renovate
       - task: renovate:cache:export
 
@@ -314,3 +314,31 @@ tasks:
         gh secret set NGROK_SSH_PRIVATE_KEY <<< "${PRIVATE_KEY}"
 
         ngrok api ssh-credentials create --description "${DESCRIPTION}" --public-key "${PUBLIC_KEY}"
+
+  ssh-debug:
+    desc: Connect to GitHub actions via ssh
+    cmds:
+      - |
+        set -x -euo pipefail
+
+        GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name' | tee /dev/stderr)"
+        gh workflow run ssh-debug.yml --field "ssh_public_key=$(cat ~/.ssh/id_rsa.pub)" --ref main
+        RUN_ID=""
+        while [ -z "${RUN_ID}" ]; do
+          sleep 4
+          RUN_ID="$(gh run list --workflow ssh-debug.yml --branch main --status=in_progress --json 'number,databaseId' --jq '[sort_by(.number) | reverse][0][0].databaseId')"
+          echo "RUN_ID=${RUN_ID@Q}" >&2
+        done
+
+        export DESCRIPTION="${GITHUB_REPOSITORY}/ssh-debug"
+        export SSH_CREDENTIAL_ID="$(ngrok api ssh-credentials list | jq -r '[.ssh_credentials[] | select(.description == env.DESCRIPTION) | .id][0]' | tee /dev/stderr)"
+        TUNNEL_SESSION_ID=""
+        while [ -z "${TUNNEL_SESSION_ID}" ]; do
+          sleep 4
+          export TUNNEL_SESSION_ID="$(ngrok api tunnel-sessions list | jq -r '[.tunnel_sessions[] | select(.credential.id == env.SSH_CREDENTIAL_ID) | .id][0]' | tee /dev/stderr)"
+        done
+
+        export TUNNEL_PUBLIC_URL="$(ngrok api tunnels list | jq -r '[.tunnels[] | select(.tunnel_session.id == env.TUNNEL_SESSION_ID) | .public_url | sub("^tcp://"; "")][0]' | tee /dev/stderr)"
+        export TUNNEL_HOST="${TUNNEL_PUBLIC_URL%%:*}"
+        export TUNNEL_PORT="${TUNNEL_PUBLIC_URL##*:}"
+        ssh -p "${TUNNEL_PORT}" runner@"${TUNNEL_HOST}" {{.CLI_ARGS}}
