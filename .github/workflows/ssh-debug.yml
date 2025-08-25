@@ -29,6 +29,9 @@ jobs:
         run: |
           set -xEeuo pipefail
 
+          uname -a >&2
+          id >&2
+
           declare -p > ~/runner.env
           mkdir -vp ~/.ssh/
           printenv NGROK_SSH_PRIVATE_KEY > ~/.ssh/id_rsa
@@ -36,7 +39,6 @@ jobs:
           sudo chmod go-rwx ~/
 
           echo "Starting the SSH server"
-          # sudo apt-get install -y openssh-server
           sudo mkdir -vp /run/sshd
           sudo /usr/sbin/sshd -D &
 
