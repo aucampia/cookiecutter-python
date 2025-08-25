@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# This hook is used to collect all branches that renovate changes so
+# they can be "touched" using the `devtools/renovate/touch-branches.sh`
+# script. This is done to trick the GitHub Actions to run for Renovate
+# PRs even though they were created by GitHub Actions itself.
+
+exec > >(tee -a /tmp/renovate/githooks-output.log) 2>&1
+
+script_path="$(readlink -f -- "${BASH_SOURCE[0]}")"
+args=("${@}")
+echo "### ${script_path} ${args@Q} started $(date +%Y%m%dT%H%M%S) in $(pwd) ###" >&2
+
+ps -fp $(ps --no-headers -o ppid -p "${$}"),"${$}" >&2
+
+set -x -Eeuo pipefail
+
+BRANCH="$(git symbolic-ref HEAD | sed -E -n -e 's,^refs/heads/,,gp')"
+REPOSITORY="$(git remote get-url --push origin | sed -E -e 's,^(https?://|)[^/]*github.com[/:]([^/]+)/([^/]+)?$,\2/\3,' -e 's/.git$//g')"
+
+export BRANCH REPOSITORY
+declare -p BRANCH REPOSITORY >&2
+
+mkdir -vp /tmp/renovate
+
+jq -en -c '{branch: env.BRANCH, repository: env.REPOSITORY}' | tee /dev/stderr >> /tmp/renovate/branches.ndjson
+
