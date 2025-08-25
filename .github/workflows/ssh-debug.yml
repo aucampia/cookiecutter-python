@@ -31,7 +31,8 @@ jobs:
 
           declare -p > ~/runner.env
           mkdir -vp ~/.ssh/
-          declare -p NGROK_SSH_PRIVATE_KEY > ~/.ssh/id_rsa
+          printenv NGROK_SSH_PRIVATE_KEY > ~/.ssh/id_rsa
+          echo >> ~/.ssh/id_rsa
           sudo chmod go-rwx ~/
 
           echo "Installing and starting the SSH server"
