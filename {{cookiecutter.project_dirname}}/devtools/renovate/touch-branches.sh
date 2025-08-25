@@ -43,6 +43,8 @@ jq \
 echo "Touching these branches:" >&2
 cat /tmp/renovate/branches-unique.ndjson >&2
 
+errors=false
+
 while IFS= read -r line; do
     echo "Processing branch: ${line}" >&2
     REPOSITORY="$(jq -er '.repository' <<<"${line}")"
@@ -53,7 +55,12 @@ while IFS= read -r line; do
     rm -r "${REPO_DIR}" || true
     mkdir -vp "${REPO_DIR}"
 
-    git clone --depth 2 --single-branch --branch "${BRANCH}" "git@github.com:${REPOSITORY}.git" "${REPO_DIR}"
+    git clone --depth 2 --single-branch --branch "${BRANCH}" "git@github.com:${REPOSITORY}.git" "${REPO_DIR}" || {
+        echo "ERROR: Failed to clone branch ${BRANCH} of repository ${REPOSITORY}" >&2
+        echo "This likely indicates that there was some problem with pushing the branch"
+        errors=true
+        continue
+    }
 
     # The last commit is amended with a new date because anything more
     # drastic makes Renovate think that someone else has modified the
@@ -63,3 +70,7 @@ while IFS= read -r line; do
     git -C "${REPO_DIR}" push --force --no-verify origin "${BRANCH}"
 
 done < <(sort <"/tmp/renovate/branches-unique.ndjson" | uniq)
+
+if [ "${errors}" = true ]; then
+    exit 1
+fi
