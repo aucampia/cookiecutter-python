@@ -294,3 +294,23 @@ tasks:
         GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name')"
         echo "${DOCKERFILE}" | docker build -t ghcr.io/${GITHUB_REPOSITORY}:empty -f - .
         docker push ghcr.io/${GITHUB_REPOSITORY}:empty
+
+
+  ssh-debug:rotate-keypair:
+    desc: Rotate the SSH keypair
+    cmds:
+      - |
+        set -x -euo pipefail
+
+        GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name')"
+        DESCRIPTION="${GITHUB_REPOSITORY}/ssh-debug"
+        ngrok api ssh-credentials list |
+          jq -r '.ssh_credentials[] | select(.description == "'"${DESCRIPTION}"'") | .id' |
+          xargs --no-run-if-empty -n1 -t ngrok api ssh-credentials delete
+
+        PRIVATE_KEY="$(openssl genrsa 4096)"
+        PUBLIC_KEY="$(ssh-keygen -y -f /dev/stdin <<< "${PRIVATE_KEY}")"
+
+        gh secret set NGROK_SSH_PRIVATE_KEY <<< "${PRIVATE_KEY}"
+
+        ngrok api ssh-credentials create --description "${DESCRIPTION}" --public-key "${PUBLIC_KEY}"

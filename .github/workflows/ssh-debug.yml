@@ -1,0 +1,47 @@
+name: ssh-debug
+
+on:
+  workflow_dispatch:
+    inputs:
+      lifetime:
+        description: 'How long should the tokens be valid for'
+        type: number
+        default: 120
+      ssh_public_key:
+        description: 'The public key to add to authorized_keys'
+        type: string
+
+concurrency:
+  group: >
+    ${{ github.repository }}-
+    ${{ github.workflow }}-
+    ${{ github.ref }}-
+    ${{ contains(fromJSON('["refs/heads/master", "refs/heads/main"]'), github.ref) && format( '{0}-{1}', github.run_id, github.sha ) || '' }}
+  cancel-in-progress: true
+
+permissions: write-all
+
+jobs:
+  ssh-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - run: |
+          set -xEeuo pipefail
+
+          declare -p > ~/runner.env
+          sudo chmod go-rwx ~/
+
+          echo "Installing and starting the SSH server"
+          sudo apt-get install -y openssh-server
+          sudo mkdir -vp /run/sshd
+          sudo /usr/sbin/sshd -D &
+
+          echo "Adding SSH public key to authorized_keys"
+          mkdir -vp ~/.ssh/
+          echo '${{github.event.inputs.ssh_public_key}}' >> ~/.ssh/authorized_keys
+          chmod -vR go-rwx ~/.ssh/ || :
+          cat ~/.ssh/authorized_keys
+
+          ssh -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null -o ControlPath=none -R 0:localhost:22 v2@connect.ngrok-agent.com tcp
