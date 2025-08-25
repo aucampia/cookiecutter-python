@@ -119,5 +119,5 @@ docker compose run --build --rm devtools task configure validate:static
 
 
 ```bash
-
+RENOVATE_LOG_LEVEL=debug task renovate:sx:run -- task renovate 2>&1 | tee renovate-output.log
 ```

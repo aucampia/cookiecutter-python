@@ -51,7 +51,7 @@ services:
           mkdir -p "$${HOME}/.ssh"
           echo "$${RENOVATE_GIT_SSH_PRIVATE_KEY}" > "$${HOME}/.ssh/id_rsa"
           chmod -R go-rwx "$${HOME}/.ssh"
-          ssh-keyscan -H github.com >> "$${HOME}/.ssh/known_hosts"
+          ssh-keyscan -H github.com | tee /dev/stderr >> "$${HOME}/.ssh/known_hosts"
         fi
 
         git config --global user.email "renovate@renovate.invalid"
