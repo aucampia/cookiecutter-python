@@ -74,7 +74,7 @@ jobs:
         env:
           RENOVATE_REPOSITORY_CACHE: ${{ github.event.inputs.repoCache || 'enabled' }}
           RENOVATE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RENOVATE_GIT_SSH_PRIVATE_KEY: ${{ secrets.RENOVATE_PRIVATE_KEY }}
+          RENOVATE_GIT_SSH_PRIVATE_KEY: ${{ secrets.RENOVATE_GIT_SSH_PRIVATE_KEY }}
           RENOVATE_LOG_LEVEL: ${{ github.event.inputs.logLevel || 'info' }}
 
       - uses: actions/upload-artifact@v4
