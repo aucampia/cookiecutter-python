@@ -218,7 +218,7 @@ tasks:
           (cd /var/tmp; gh run --repo "${GITHUB_REPOSITORY}" download "$RUN_ID" -n renovate-sx)
         done
         source <(gpg --decrypt -i /var/tmp/renovate-sx.asc | tee /dev/stderr)
-        export RENOVATE_PRIVATE_KEY
+        export RENOVATE_GIT_SSH_PRIVATE_KEY
         export RENOVATE_TOKEN
         {{.CLI_ARGS}}
         echo "Canceling Renovate run ${RUN_ID}..." >&2

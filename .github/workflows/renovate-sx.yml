@@ -45,11 +45,11 @@ jobs:
 
           {
             echo "RENOVATE_TOKEN=${RENOVATE_TOKEN@Q}"
-            echo "RENOVATE_PRIVATE_KEY=${RENOVATE_PRIVATE_KEY@Q}"
+            echo "RENOVATE_GIT_SSH_PRIVATE_KEY=${RENOVATE_GIT_SSH_PRIVATE_KEY@Q}"
           } | gpg --encrypt --armor --recipient-file /var/tmp/gpg.pub > /var/tmp/renovate-sx.asc
         env:
           RENOVATE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RENOVATE_PRIVATE_KEY: ${{ secrets.RENOVATE_PRIVATE_KEY }}
+          RENOVATE_GIT_SSH_PRIVATE_KEY: ${{ secrets.RENOVATE_GIT_SSH_PRIVATE_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
