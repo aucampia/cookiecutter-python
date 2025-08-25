@@ -75,10 +75,14 @@ services:
         # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/renovate-entrypoint.sh
         # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/docker-entrypoint.sh
 
+        export GIT_TRACE=/tmp/renovate/git-trace.log
+
         source /usr/local/etc/env
         renovate
 
         /srv/workspace/devtools/renovate/touch-branches.sh
+
+        cat /tmp/renovate/git-trace.log >&2
 
         echo "Renovate finished successfully." >&2
 volumes:
