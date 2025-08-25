@@ -1,5 +1,6 @@
 exclude:
   - .venv
+  - .cache
 formatter:
   type: basic
   retain_line_breaks: true
