@@ -38,6 +38,7 @@
                 "enabled": false,
             },
             "platformAutomerge": true,
+            "pinDigests": true,
             "osvVulnerabilityAlerts": true,
             "dependencyDashboardOSVVulnerabilitySummary": true,
             "prConcurrentLimit": 3,
