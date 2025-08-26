@@ -55,7 +55,7 @@
                         "pin",
                         "digest"
                     ],
-                    "automerge": true
+                    "automerge": false
                 }
             ],
             "github-actions": {
