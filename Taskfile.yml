@@ -206,7 +206,7 @@ tasks:
       TMP_DIR:
         sh: |
           set -euo pipefail;
-          mktemp -d -t renovate-sx-XXXXXXXXXX
+          mktemp -d -t renovate-env-XXXXXXXXXX
     cmds:
       - defer: |
           if [ -e "${TMP_DIR}/run_id" ]; then
@@ -220,23 +220,23 @@ tasks:
       - |
         set -euo pipefail
 
-        gh workflow run renovate-sx.yml --field lifetime=300 --ref main
+        gh workflow run renovate-env.yml --field lifetime=300 --field "gpg_public_key=$(gpg --armor --export)" --ref main
         RUN_ID=""
         while [ -z "${RUN_ID}" ]; do
           sleep 4
           echo "Waiting for Renovate run to start..."
-          RUN_ID="$(gh run list --workflow renovate-sx.yml --branch main --status=in_progress --json 'number,databaseId' --jq '[sort_by(.number) | reverse][0][0].databaseId')"
+          RUN_ID="$(gh run list --workflow renovate-env.yml --branch main --status=in_progress --json 'number,databaseId' --jq '[sort_by(.number) | reverse][0][0].databaseId')"
         done
         echo "RUN_ID=${RUN_ID@Q}" >&2
         echo "${RUN_ID}" > "${TMP_DIR}/run_id"
       - |
-        rm -v "${TMP_DIR}/renovate-sx.asc" || true
-        while ! [ -e "${TMP_DIR}/renovate-sx.asc" ]; do
+        rm -v "${TMP_DIR}/renovate-env.asc" || true
+        while ! [ -e "${TMP_DIR}/renovate-env.asc" ]; do
           echo "Waiting for download to complete..."
           sleep 2
-          (cd "${TMP_DIR}"; gh run --repo "${GITHUB_REPOSITORY}" download "$RUN_ID" -n renovate-sx)
+          (cd "${TMP_DIR}"; gh run --repo "${GITHUB_REPOSITORY}" download "$RUN_ID" -n renovate-env)
         done
-        source <(gpg --decrypt -i "${TMP_DIR}/renovate-sx.asc" | tee /dev/stderr)
+        source <(gpg --decrypt -i "${TMP_DIR}/renovate-env.asc" | tee /dev/stderr)
         export RENOVATE_GIT_SSH_PRIVATE_KEY
         export RENOVATE_TOKEN
         {{.CLI_ARGS}}
