@@ -22,12 +22,14 @@ concurrency:
     ${{ contains(fromJSON('["refs/heads/master", "refs/heads/main"]'), github.ref) && format( '{0}-{1}', github.run_id, github.sha ) || '' }}
   cancel-in-progress: true
 
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  actions: read
-  security-events: read
+# permissions:
+#   contents: write
+#   pull-requests: write
+#   issues: write
+#   actions: read
+#   security-events: read
+
+permissions: write-all
 
 jobs:
   renovate-sx:
