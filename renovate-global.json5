@@ -51,6 +51,8 @@
                 "gomod",
                 "dockerfile",
             ],
+            "automergeStrategy": "squash",
+            "rebaseWhen": "conflicted",
             "packageRules": [
                 {
                     "matchUpdateTypes": [
@@ -59,7 +61,7 @@
                         "pin",
                         "digest"
                     ],
-                    "automerge": true
+                    "automerge": true,
                 }
             ]
         }
