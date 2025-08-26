@@ -20,7 +20,9 @@
     // git hook to collect modified branches so we can "touch" them to
     // trigger the CI pipeline. This overwrites the default so that it's
     // just "commit" that uses `--no-verify`.
-    "gitNoVerify": ["commit"],
+    "gitNoVerify": [
+        "commit"
+    ],
     "repositories": [
         {
             "repository": "aucampia/cookiecutter-python",
@@ -41,11 +43,21 @@
             "enabledManagers": [
                 "pip-compile",
                 "poetry",
-                "github-actions",
+                // "github-actions",
                 "gomod",
                 "dockerfile",
             ],
-            "packageRules": [],
+            "packageRules": [
+                {
+                    "matchUpdateTypes": [
+                        "minor",
+                        "patch",
+                        "pin",
+                        "digest"
+                    ],
+                    "automerge": true
+                }
+            ],
             "github-actions": {
                 "managerFilePatterns": [
                     "/(^|/)(workflow-templates|\\.(?:github-x|gitea|forgejo)/(?:workflows|actions))/.+\\.ya?ml$/",

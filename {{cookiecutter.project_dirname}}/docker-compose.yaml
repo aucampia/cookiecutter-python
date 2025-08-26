@@ -80,10 +80,12 @@ services:
         echo -n > /tmp/renovate/githooks-output.log
 
         dump_logs() {
-          echo "GIT_TRACE logs:" >&2
-          cat /tmp/renovate/git-trace.log >&2
-          echo "GITHOOKS_OUTPUT logs:" >&2
-          cat /tmp/renovate/githooks-output.log >&2
+          if [ "$${LOG_LEVEL}" == "debug" ]; then
+            echo "GIT_TRACE logs:" >&2
+            cat /tmp/renovate/git-trace.log >&2
+            echo "GITHOOKS_OUTPUT logs:" >&2
+            cat /tmp/renovate/githooks-output.log >&2
+          fi
         }
 
         trap dump_logs EXIT
