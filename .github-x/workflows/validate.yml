@@ -1,0 +1,57 @@
+name: Validate
+
+on:
+  push: {}
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: >
+    ${{ github.repository }}-
+    ${{ github.workflow }}-
+    ${{ github.ref }}-
+    ${{ contains(fromJSON('["refs/heads/master", "refs/heads/main"]'), github.ref) && format( '{0}-{1}', github.run_id, github.sha ) || '' }}
+  cancel-in-progress: true
+
+env:
+  XDG_CACHE_HOME: ${{ github.workspace }}/.cache/xdg
+
+permissions:
+  packages: write
+  contents: read
+  id-token: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      # Need to add repo here first:
+      # https://github.com/users/aucampia/packages/container/cookiecutter-python/settings
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache xdg
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.XDG_CACHE_HOME }}
+          key: xdg-${{ github.job }}-v1-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            xdg-${{ github.job }}-v1
+            xdg-${{ github.job }}
+      - name: Run validation
+        run: |
+          set -x -Eeuo pipefail
+          # printenv GITHUB_TOKEN | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker buildx create --name main --driver=docker-container --bootstrap --use
+          docker compose run --build --rm devtools task configure validate:static
+          sudo chown -R "$(id -u):$(id -g)" .
+        env:
+          DOCKER_BUILDKIT_CACHE_TO: "type=registry,ref=ghcr.io/${{ github.repository }}:cache,mode=max"
+          DOCKER_BUILDKIT_CACHE_FROM: "type=registry,ref=ghcr.io/${{ github.repository }}:cache"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
