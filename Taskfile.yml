@@ -5,6 +5,8 @@ version: "3"
 env:
   RENOVATE_CACHE_ARCHIVE: '{{.RENOVATE_CACHE_ARCHIVE | default "/tmp/renovate-cache.tar.gz"}}'
   RENOVATE_REPORT_FILE: '{{.RENOVATE_REPORT_FILE | default "/tmp/renovate-report.json"}}'
+  GITHUB_REPOSITORY:
+    sh: gh repo view --json owner,name -q '.owner.login + "/" + .name'
 vars:
   PYTHON: python3
   POETRY: "poetry"
@@ -200,30 +202,45 @@ tasks:
 
   renovate:sx:run:
     desc: Extract renovate secrets
+    env:
+      TMP_DIR:
+        sh: |
+          set -euo pipefail;
+          mktemp -d -t renovate-sx-XXXXXXXXXX
     cmds:
+      - defer: |
+          if [ -e "${TMP_DIR}/run_id" ]; then
+            RUN_ID="$(cat "${TMP_DIR}/run_id")"
+            echo "Canceling Renovate run ${RUN_ID}..." >&2
+            gh run cancel --repo "${GITHUB_REPOSITORY}" "${RUN_ID}" || true
+          fi
+
+          echo "Removing all the temp files";
+          rm -vfr "${TMP_DIR}"
       - |
         set -euo pipefail
-        GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name')"
+
         gh workflow run renovate-sx.yml --field lifetime=300 --ref main
         RUN_ID=""
         while [ -z "${RUN_ID}" ]; do
           sleep 4
+          echo "Waiting for Renovate run to start..."
           RUN_ID="$(gh run list --workflow renovate-sx.yml --branch main --status=in_progress --json 'number,databaseId' --jq '[sort_by(.number) | reverse][0][0].databaseId')"
-          echo "RUN_ID=${RUN_ID@Q}" >&2
         done
-        \rm -v /var/tmp/renovate-sx.asc || true
-        while ! [ -e "/var/tmp/renovate-sx.asc" ]; do
+        echo "RUN_ID=${RUN_ID@Q}" >&2
+        echo "${RUN_ID}" > "${TMP_DIR}/run_id"
+      - |
+        rm -v "${TMP_DIR}/renovate-sx.asc" || true
+        while ! [ -e "${TMP_DIR}/renovate-sx.asc" ]; do
           echo "Waiting for download to complete..."
           sleep 2
-          (cd /var/tmp; gh run --repo "${GITHUB_REPOSITORY}" download "$RUN_ID" -n renovate-sx)
+          (cd "${TMP_DIR}"; gh run --repo "${GITHUB_REPOSITORY}" download "$RUN_ID" -n renovate-sx)
         done
-        source <(gpg --decrypt -i /var/tmp/renovate-sx.asc | tee /dev/stderr)
+        source <(gpg --decrypt -i "${TMP_DIR}/renovate-sx.asc" | tee /dev/stderr)
         export RENOVATE_GIT_SSH_PRIVATE_KEY
         export RENOVATE_TOKEN
         {{.CLI_ARGS}}
-        echo "Canceling Renovate run ${RUN_ID}..." >&2
-        gh run cancel --repo "${GITHUB_REPOSITORY}" "${RUN_ID}" || true
-        rm -v /var/tmp/renovate-sx.asc || true
+
 
   renovate:report:export:
     desc: Export the Renovate report

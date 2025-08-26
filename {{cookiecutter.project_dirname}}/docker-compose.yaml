@@ -77,12 +77,17 @@ services:
 
         export GIT_TRACE=/tmp/renovate/git-trace.log
 
+        dump_logs() {
+          echo "GIT_TRACE logs:" >&2
+          cat /tmp/renovate/git-trace.log >&2
+        }
+
+        trap dump_logs EXIT
+
         source /usr/local/etc/env
         renovate
 
         /srv/workspace/devtools/renovate/touch-branches.sh
-
-        cat /tmp/renovate/git-trace.log >&2
 
         echo "Renovate finished successfully." >&2
 volumes:
