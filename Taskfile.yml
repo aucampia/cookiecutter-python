@@ -230,6 +230,8 @@ tasks:
         echo "RUN_ID=${RUN_ID@Q}" >&2
         echo "${RUN_ID}" > "${TMP_DIR}/run_id"
       - |
+        set -euo pipefail
+
         rm -v "${TMP_DIR}/renovate-env.asc" || true
         while ! [ -e "${TMP_DIR}/renovate-env.asc" ]; do
           echo "Waiting for download to complete..."
@@ -339,17 +341,32 @@ tasks:
     env:
       GITHUB_REPOSITORY:
         sh: gh repo view --json owner,name -q '.owner.login + "/" + .name'
+      TMP_DIR:
+        sh: |
+          set -euo pipefail;
+          mktemp -d -t renovate-env-XXXXXXXXXX
     cmds:
+      - defer: |
+          if [ -e "${TMP_DIR}/run_id" ]; then
+            RUN_ID="$(cat "${TMP_DIR}/run_id")"
+            echo "Canceling Renovate run ${RUN_ID}..." >&2
+            gh run cancel --repo "${GITHUB_REPOSITORY}" "${RUN_ID}" || true
+          fi
+
+          echo "Removing all the temp files";
+          rm -vfr "${TMP_DIR}"
       - |
         set -x -euo pipefail
 
         gh workflow run ssh-debug.yml --field "ssh_public_key=$(cat ~/.ssh/id_rsa.pub)" --ref main
         RUN_ID=""
         while [ -z "${RUN_ID}" ]; do
+          echo "Waiting for ssh-debug run to start..."
           sleep 4
           RUN_ID="$(gh run list --workflow ssh-debug.yml --branch main --status=in_progress --json 'number,databaseId' --jq '[sort_by(.number) | reverse][0][0].databaseId')"
-          echo "RUN_ID=${RUN_ID@Q}" >&2
         done
+        echo "RUN_ID=${RUN_ID@Q}" >&2
+        echo "${RUN_ID}" > "${TMP_DIR}/run_id"
 
         export DESCRIPTION="${GITHUB_REPOSITORY}/ssh-debug"
         export SSH_CREDENTIAL_ID="$(ngrok api ssh-credentials list | jq -r '[.ssh_credentials[] | select(.description == env.DESCRIPTION) | .id][0]' | tee /dev/stderr)"
