@@ -119,18 +119,6 @@ docker compose run --build --rm devtools task configure validate:static
 
 
 ```bash
-RENOVATE_LOG_LEVEL=debug task renovate:sx:run -- task renovate 2>&1 | tee renovate-output.log
-RENOVATE_LOG_LEVEL=debug task renovate:sx:run -- docker compose run --rm -T renovate bash -c 'ssh git@github.com'
-```
-
-
-```bash
-GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name' | tee /dev/stderr)"
-export DESCRIPTION="${GITHUB_REPOSITORY}/ssh-debug"
-export SSH_CREDENTIAL_ID="$(ngrok api ssh-credentials list | jq -r '[.ssh_credentials[] | select(.description == env.DESCRIPTION) | .id][0]' | tee /dev/stderr)"
-export TUNNEL_SESSION_ID="$(ngrok api tunnel-sessions list | jq -r '[.tunnel_sessions[] | select(.credential.id == env.SSH_CREDENTIAL_ID) | .id][0]' | tee /dev/stderr)"
-export TUNNEL_PUBLIC_URL="$(ngrok api tunnels list | jq -r '[.tunnels[] | select(.tunnel_session.id == env.TUNNEL_SESSION_ID) | .public_url | sub("^tcp://"; "")][0]' | tee /dev/stderr)"
-export TUNNEL_HOST="${TUNNEL_PUBLIC_URL%%:*}"
-export TUNNEL_PORT="${TUNNEL_PUBLIC_URL##*:}"
-ssh -p "${TUNNEL_PORT}" runner@"${TUNNEL_HOST}"
+RENOVATE_LOG_LEVEL=debug task renovate:env:run -- task renovate 2>&1 | tee renovate-output.log
+RENOVATE_LOG_LEVEL=debug task renovate:env:run -- docker compose run --rm -T renovate bash -c 'ssh git@github.com'
 ```
