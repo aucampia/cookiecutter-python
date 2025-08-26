@@ -45,7 +45,12 @@
                 "gomod",
                 "dockerfile",
             ],
-            "packageRules": []
+            "packageRules": [],
+            "github-actions": {
+                "managerFilePatterns": [
+                    "/(^|/)(workflow-templates|\\.(?:github-x|gitea|forgejo)/(?:workflows|actions))/.+\\.ya?ml$/",
+                ]
+            },
         }
     ]
 }
