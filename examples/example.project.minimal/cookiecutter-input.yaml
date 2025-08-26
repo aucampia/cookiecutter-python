@@ -13,6 +13,6 @@ default_context:
   python_version: '3.9'
   sdpx_license_identifier: UNLICENSED
   use_oci_devtools: n
-  use_poetry_dynamic_versioning: n
+  use_poetry_dynamic_versioning: y
   variant: minimal
   version: 0.0.0

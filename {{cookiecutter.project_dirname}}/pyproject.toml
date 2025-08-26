@@ -174,7 +174,7 @@ files=["src/**/_version.py"]
 [build-system]
 # {% if cookiecutter.use_poetry_dynamic_versioning == "y" %}
 requires = ["setuptools","poetry-core>=1.0.0","poetry-dynamic-versioning"]
-# {% else %}
-requires = ["setuptools","poetry-core>=1.0.0"]
+# {% else %}{% if 1 == 0 %}
+# {% else %}{{ "\n" }}{% endif %}requires = ["setuptools","poetry-core>=1.0.0"]
 # {% endif %}
 build-backend = "poetry.core.masonry.api"
