@@ -17,5 +17,5 @@ set -x -Eeuo pipefail
 
 REPOSITORY="$(git remote get-url --push origin | sed -E -e 's,^(https?://|)[^/]*github.com[/:]([^/]+)/([^/]+)?$,\2/\3,' -e 's/.git$//g')"
 
-git remote set-url origin "git@github.com:${REPOSITORY}.git"
+# git remote set-url origin "git@github.com:${REPOSITORY}.git"
 
