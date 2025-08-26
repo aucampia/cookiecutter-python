@@ -37,6 +37,7 @@
                 // won't work. Disabling it to avoid errors.
                 "enabled": false,
             },
+            "platformAutomerge": true,
             "osvVulnerabilityAlerts": true,
             "dependencyDashboardOSVVulnerabilitySummary": true,
             "prConcurrentLimit": 3,

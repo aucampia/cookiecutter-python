@@ -236,7 +236,7 @@ tasks:
         while ! [ -e "${TMP_DIR}/renovate-env.asc" ]; do
           echo "Waiting for download to complete..."
           sleep 2
-          (cd "${TMP_DIR}"; gh run --repo "${GITHUB_REPOSITORY}" download "$RUN_ID" -n renovate-env)
+          (cd "${TMP_DIR}"; gh run --repo "${GITHUB_REPOSITORY}" download "$(cat "${TMP_DIR}/run_id")" -n renovate-env)
         done
         source <(gpg --decrypt -i "${TMP_DIR}/renovate-env.asc" | tee /dev/stderr)
         export RENOVATE_GIT_SSH_PRIVATE_KEY
