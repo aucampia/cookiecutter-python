@@ -291,7 +291,6 @@ tasks:
           rm -r "${RENOVATE_CACHE_ARCHIVE}"
         fi
 
-
   devtools:go:install:
     cmds:
       - |
@@ -314,7 +313,6 @@ tasks:
       - |
         echo "${DOCKERFILE}" | docker build -t ghcr.io/${GITHUB_REPOSITORY}:empty -f - .
         docker push ghcr.io/${GITHUB_REPOSITORY}:empty
-
 
   ssh-debug:rotate-keypair:
     desc: Rotate the SSH keypair
@@ -344,7 +342,7 @@ tasks:
       TMP_DIR:
         sh: |
           set -euo pipefail;
-          mktemp -d -t renovate-env-XXXXXXXXXX
+          mktemp -d -t ssh-debug-XXXXXXXXXX
     cmds:
       - defer: |
           if [ -e "${TMP_DIR}/run_id" ]; then

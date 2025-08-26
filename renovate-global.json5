@@ -40,7 +40,9 @@
             "osvVulnerabilityAlerts": true,
             "dependencyDashboardOSVVulnerabilitySummary": true,
             "prConcurrentLimit": 3,
+            // https://docs.renovatebot.com/modules/manager/
             "enabledManagers": [
+                "docker-compose",
                 "pip-compile",
                 "poetry",
                 // "github-actions",
@@ -55,14 +57,9 @@
                         "pin",
                         "digest"
                     ],
-                    "automerge": false
+                    "automerge": true
                 }
-            ],
-            "github-actions": {
-                "managerFilePatterns": [
-                    "/(^|/)(workflow-templates|\\.(?:github-x|gitea|forgejo)/(?:workflows|actions))/.+\\.ya?ml$/",
-                ]
-            },
+            ]
         }
     ]
 }
