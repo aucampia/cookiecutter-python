@@ -5,8 +5,6 @@ version: "3"
 env:
   RENOVATE_CACHE_ARCHIVE: '{{.RENOVATE_CACHE_ARCHIVE | default "/tmp/renovate-cache.tar.gz"}}'
   RENOVATE_REPORT_FILE: '{{.RENOVATE_REPORT_FILE | default "/tmp/renovate-report.json"}}'
-  GITHUB_REPOSITORY:
-    sh: gh repo view --json owner,name -q '.owner.login + "/" + .name'
 vars:
   PYTHON: python3
   POETRY: "poetry"
@@ -200,13 +198,15 @@ tasks:
       - docker compose run --quiet-build --quiet-pull -T --rm renovate
       - task: renovate:cache:export
 
-  renovate:sx:run:
+  renovate:env:run:
     desc: Extract renovate secrets
     env:
       TMP_DIR:
         sh: |
           set -euo pipefail;
           mktemp -d -t renovate-env-XXXXXXXXXX
+      GITHUB_REPOSITORY:
+        sh: gh repo view --json owner,name -q '.owner.login + "/" + .name'
     cmds:
       - defer: |
           if [ -e "${TMP_DIR}/run_id" ]; then
@@ -306,20 +306,22 @@ tasks:
       DOCKERFILE: |
         FROM scratch
         LABEL description="Empty Docker image"
+      GITHUB_REPOSITORY:
+        sh: gh repo view --json owner,name -q '.owner.login + "/" + .name'
     cmds:
       - |
-        GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name')"
         echo "${DOCKERFILE}" | docker build -t ghcr.io/${GITHUB_REPOSITORY}:empty -f - .
         docker push ghcr.io/${GITHUB_REPOSITORY}:empty
 
 
   ssh-debug:rotate-keypair:
     desc: Rotate the SSH keypair
+    env:
+      GITHUB_REPOSITORY:
+        sh: gh repo view --json owner,name -q '.owner.login + "/" + .name'
     cmds:
       - |
         set -x -euo pipefail
-
-        GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name')"
         DESCRIPTION="${GITHUB_REPOSITORY}/ssh-debug"
         ngrok api ssh-credentials list |
           jq -r '.ssh_credentials[] | select(.description == "'"${DESCRIPTION}"'") | .id' |
@@ -334,11 +336,13 @@ tasks:
 
   ssh-debug:
     desc: Connect to GitHub actions via ssh
+    env:
+      GITHUB_REPOSITORY:
+        sh: gh repo view --json owner,name -q '.owner.login + "/" + .name'
     cmds:
       - |
         set -x -euo pipefail
 
-        GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name' | tee /dev/stderr)"
         gh workflow run ssh-debug.yml --field "ssh_public_key=$(cat ~/.ssh/id_rsa.pub)" --ref main
         RUN_ID=""
         while [ -z "${RUN_ID}" ]; do

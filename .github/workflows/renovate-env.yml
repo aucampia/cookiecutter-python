@@ -1,0 +1,71 @@
+# https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
+# Extracts the environment variables needed to run Renovate manually.
+name: renovate-env
+
+on:
+  workflow_dispatch:
+    inputs:
+      lifetime:
+        description: 'How long should the tokens be valid for'
+        type: number
+        default: 120
+      gpg_public_key:
+        required: true
+        description: 'The public key to use for the GPG key'
+        type: string
+      # key_user:
+      #   description: 'The user to use for the GPG key'
+      #   type: string
+      #   default: 'aucampia'
+      # key_id:
+      #   description: 'The key ID to use for the GPG key'
+      #   type: string
+      #   default: '06AF686FB4F8CDB8'
+      #   # push:
+      #   #   branches:
+      #   #     - '**'
+
+concurrency:
+  group: >
+    ${{ github.repository }}-
+    ${{ github.workflow }}-
+    ${{ github.ref }}-
+    ${{ contains(fromJSON('["refs/heads/master", "refs/heads/main"]'), github.ref) && format( '{0}-{1}', github.run_id, github.sha ) || '' }}
+  cancel-in-progress: true
+
+# permissions:
+#   contents: write
+#   pull-requests: write
+#   issues: write
+#   actions: read
+#   security-events: read
+
+permissions: write-all
+
+jobs:
+  renovate-sx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export Renovate Secrets
+        run: |
+          set -Eeuo pipefail
+          # gh api https://api.github.com/users/${{ github.event.inputs.key_user }}/gpg_keys --jq '.[] | select(.key_id == "${{ github.event.inputs.key_id }}") | .raw_key' > /var/tmp/gpg.pub
+
+          echo '${{ github.event.inputs.gpg_public_key }}' | tee /dev/stderr > /var/tmp/gpg.pub
+
+          {
+            echo "RENOVATE_TOKEN=${RENOVATE_TOKEN@Q}"
+            echo "RENOVATE_GIT_SSH_PRIVATE_KEY=${RENOVATE_GIT_SSH_PRIVATE_KEY@Q}"
+          } | gpg --encrypt --armor --recipient-file /var/tmp/gpg.pub > /var/tmp/renovate-env.asc
+        env:
+          RENOVATE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RENOVATE_GIT_SSH_PRIVATE_KEY: ${{ secrets.RENOVATE_GIT_SSH_PRIVATE_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: renovate-env
+          path: /var/tmp/renovate-env.asc
+          retention-days: 1
+      - run: |
+          set -Eeuo pipefail
+          sleep ${{ github.event.inputs.lifetime }}
