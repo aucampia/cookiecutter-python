@@ -1,4 +1,4 @@
-FROM docker.io/library/golang:1.25.0-alpine AS golang
+FROM docker.io/library/golang:1.25.0-alpine@sha256:f18a072054848d87a8077455f0ac8a25886f2397f88bfdd222d6fafbb5bba440 AS golang
 
 RUN \
     go env > /usr/local/bin/goenv.sh && \
@@ -15,10 +15,10 @@ RUN \
     find "${GOBIN}" && \
     true
 
-FROM docker.io/mikefarah/yq:4 AS yq
+FROM docker.io/mikefarah/yq:4@sha256:b9285dd3b0bea3c34d0c54415dd48d767dabd9644d489bd6e253660847b58419 AS yq
 
 # ... {% if False %}
-FROM ghcr.io/astral-sh/uv:bookworm AS python
+FROM ghcr.io/astral-sh/uv:bookworm@sha256:00e6df6b8c046a1b447c5fb166d067e7efa29a60843db5faf2ea5907cacedc5c AS python
 # {% else %}{{"\n"}}FROM docker.io/library/python:{{ cookiecutter.python_version }} AS python{% endif %}
 ENTRYPOINT [  ]
 
