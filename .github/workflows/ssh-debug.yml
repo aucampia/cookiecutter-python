@@ -7,8 +7,6 @@ on:
         description: 'The public key to add to authorized_keys'
         type: string
         required: true
-        # default: |
-        #   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDEdhlqu53pND3KnDK9J+xwTfQaCBSbD9zrE8hImvX3C0OKJuTCn4SWCXBKRz9nmzJ7SxbhYd1+sJltV0nP2+rcApGV+mIMhgB2ntrvTgUNQpx70PPAxbblITzVIeldSq2W7x07fgVB6eMQEKYwhrDv3mjEJtqJz+HkFQMmh7jCWCaj5JL3BZNJ2kBNM5WsWkB0U1qFYF1JG3cdlAJpeqYzAWzrH0Of5sXn3AzvahR70T7m8x4WeSe/2G9lPdTa/p0kRFFHx9bYzwfyI9J6eXl0LpZFoPqwd+TeK6lW57MCHZED7pb3p/EwATULJjlEx9NSf7XZa8aa/jCP8UwTjjc1K+kne9pcI2bo+kTtSVPpnmIgsHZY7O4sY6c+ScXrtsPLzMhHeDFbUuxYhumZjuWf4SZ7zSkpydFFvj5waAgR3RvXTTuWxCAhjaHPhygR0TLmb9KrwSOXZP1REDA2Vm7QZK/0G4GxasUocnqzZXAOlaQK1JUGKqzpnqefuyPjH7+W2e968GODfzFJk2EQxf9cRRZgmsbXEDctoJLvNSNpZzTQzQ1IZQE1CTtwaZv6Yjaii04bgS56CWXDqYOpxU3gw0xZyC6zf92ZlsIStEj2z3tveXKK/x1proQEXQQZHBqU2jEse7LOJGKHGA1YG7+hnqDRH+xMfOkjBhZb4Oc6Hw== tb0@tb0-pw090cxn/20250331-000
 
 concurrency:
   group: >
@@ -45,10 +43,11 @@ jobs:
 
           echo "Adding SSH public key to authorized_keys"
           mkdir -vp ~/.ssh/
-          echo '${{github.event.inputs.ssh_public_key}}' >> ~/.ssh/authorized_keys
+          printenv USER_SSH_PUBLIC_KEY >> ~/.ssh/authorized_keys
           chmod -vR go-rwx ~/.ssh/ || :
           cat ~/.ssh/authorized_keys
 
           ssh -o StrictHostKeyChecking=no -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null -o ControlPath=none -R 0:localhost:22 v2@connect.ngrok-agent.com tcp
         env:
           NGROK_SSH_PRIVATE_KEY: ${{ secrets.NGROK_SSH_PRIVATE_KEY }}
+          USER_SSH_PUBLIC_KEY: ${{ github.event.inputs.ssh_public_key }}

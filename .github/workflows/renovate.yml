@@ -14,16 +14,12 @@ on:
       logLevel:
         description: 'Log level'
         type: choice
-        default: debug
+        default: info
         options:
           - debug
           - info
   schedule:
     - cron: 0 9,11,13,15 * * *
-      # push:
-      #   branches:
-      #     - aucampia/renovate-000
-
 
 concurrency:
   group: >
