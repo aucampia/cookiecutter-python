@@ -57,7 +57,7 @@ while IFS= read -r line; do
 
     git clone --depth 2 --single-branch --branch "${BRANCH}" "git@github.com:${REPOSITORY}.git" "${REPO_DIR}" || {
         echo "ERROR: Failed to clone branch ${BRANCH} of repository ${REPOSITORY}" >&2
-        echo "This likely indicates that there was some problem with pushing the branch"
+        echo "This likely indicates that there was some problem with pushing the branch" >&2
         errors=true
         continue
     }

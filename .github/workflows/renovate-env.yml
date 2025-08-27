@@ -1,5 +1,8 @@
 # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
-# Extracts the environment variables needed to run Renovate manually.
+# This workflow extracts the environment variables needed to run
+# Renovate manually. It remains active for {lifetime} seconds so the
+# GitHub Action token remains valid, but the task that invokes it kills
+# it as soon as it's done with the tokens.
 name: renovate-env
 
 on:
@@ -11,28 +14,24 @@ on:
         default: 120
       gpg_public_key:
         required: true
-        description: 'The public key to use for the GPG key'
+        description: 'The public key to use for GPG encryption'
         type: string
 
 concurrency:
   group: >
     ${{ github.repository }}-
     ${{ github.workflow }}-
-    ${{ github.ref }}-
-    ${{ contains(fromJSON('["refs/heads/master", "refs/heads/main"]'), github.ref) && format( '{0}-{1}', github.run_id, github.sha ) || '' }}
   cancel-in-progress: true
 
-# permissions:
-#   contents: write
-#   pull-requests: write
-#   issues: write
-#   actions: read
-#   security-events: read
-
-permissions: write-all
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+  security-events: read
 
 jobs:
-  renovate-sx:
+  renovate-env:
     runs-on: ubuntu-latest
     steps:
       - name: Export Renovate Secrets
@@ -48,7 +47,6 @@ jobs:
         env:
           RENOVATE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RENOVATE_GIT_SSH_PRIVATE_KEY: ${{ secrets.RENOVATE_GIT_SSH_PRIVATE_KEY }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_PUBLIC_KEY: ${{ github.event.inputs.gpg_public_key }}
       - uses: actions/upload-artifact@v4
         with:
