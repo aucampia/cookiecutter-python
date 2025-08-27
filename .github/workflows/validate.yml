@@ -38,7 +38,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache xdg
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.XDG_CACHE_HOME }}
           key: xdg-${{ github.job }}-v1-${{ hashFiles('pyproject.toml') }}
