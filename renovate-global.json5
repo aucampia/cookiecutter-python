@@ -27,9 +27,13 @@
         {
             "repository": "aucampia/cookiecutter-python",
             // https://docs.renovatebot.com/config-overview/
+            // https://docs.renovatebot.com/configuration-options/
             // https://docs.renovatebot.com/modules/manager/
             "extends": [
                 "config:recommended"
+            ],
+            "labels": [
+                "dependencies"
             ],
             "vulnerabilityAlerts": {
                 // Unfortunately we can't access the GitHub Dependabot
