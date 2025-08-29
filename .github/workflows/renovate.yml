@@ -41,6 +41,8 @@ permissions:
   issues: write
   actions: read
   security-events: read
+  statuses: write
+  checks: read
 
 jobs:
   renovate:
