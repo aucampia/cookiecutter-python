@@ -69,6 +69,8 @@ while IFS= read -r line; do
     git -C "${REPO_DIR}" commit --amend --no-edit --date="now"
     git -C "${REPO_DIR}" push --force --no-verify origin "${BRANCH}"
 
+    (cd "${REPO_DIR}" && gh pr review --approve --body "Auto-approved by workflow." "${BRANCH}")
+
 done < <(sort <"/tmp/renovate/branches-unique.ndjson" | uniq)
 
 if [ "${errors}" = true ]; then
