@@ -49,6 +49,7 @@ while IFS= read -r line; do
     echo "Processing branch: ${line}" >&2
     REPOSITORY="$(jq -er '.repository' <<<"${line}")"
     BRANCH="$(jq -er '.branch' <<<"${line}")"
+    export REPOSITORY BRANCH
     declare -p REPOSITORY BRANCH >&2
 
     REPO_DIR="${REPOS_DIR}/${REPOSITORY}"
@@ -68,6 +69,19 @@ while IFS= read -r line; do
     # branch, it will essentially ignore it.
     git -C "${REPO_DIR}" commit --amend --no-edit --date="now"
     git -C "${REPO_DIR}" push --force --no-verify origin "${BRANCH}"
+
+    # # COMMIT_ID="$(git -C "${REPO_DIR}" rev-parse HEAD)"
+    # PR_NUMBER="$(jq -er '[.repositories[env.REPOSITORY].branches[] | select(.branchName == env.BRANCH)][0] | .prNo' /tmp/renovate/report.json)"
+    # declare -p PR_NUMBER
+
+    # echo "Auto-approving PR for branch: ${BRANCH} ${PR_NUMBER}" >&2
+    # curl --fail-with-body -L \
+    #     -X POST \
+    #     -H "Accept: application/vnd.github+json" \
+    #     -H "Authorization: Bearer ${RENOVATE_TOKEN}" \
+    #     -H "X-GitHub-Api-Version: 2022-11-28" \
+    #     "https://api.github.com/repos/${REPOSITORY}/pulls/${PR_NUMBER}/reviews" \
+    #     -d '{"body":"Auto-approve by workflow.","event":"APPROVE"}'
 
     # echo "Auto-approving PR for branch: ${BRANCH}" >&2
     # (cd "${REPO_DIR}" && gh pr review --approve --body "Auto-approved by workflow." "${BRANCH}")
