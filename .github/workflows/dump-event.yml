@@ -6,14 +6,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          cat <<'EOF'
-
-          GitHub action:
+          mkdir -vp objects/
+          cat > objects/github.json <<'EOF'
           ${{ toJson(github) }}
+          EOF
 
-          Event:
-          ${{ toJson(github.event) }}
-
-          Environment variables:
+          cat > objects/env.json <<'EOF'
           ${{ toJson(env) }}
           EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: renovate-report
+          path: objects/
+          retention-days: 1
+
+

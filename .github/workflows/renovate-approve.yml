@@ -6,7 +6,7 @@ permissions:
   contents: write
 
 jobs:
-  dependabot:
+  auto-approve:
     runs-on: ubuntu-latest
     if: ${{ github.event.user.login == 'github-actions[bot]' }}
     steps:
