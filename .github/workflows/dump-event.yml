@@ -9,8 +9,8 @@ jobs:
           cat <<'EOF'
 
           Event payload:
-          ${ toJson(github.event) }
+          ${{ toJson(github.event) }}
 
           Environment variables:
-          ${ toJson(env) }
+          ${{ toJson(env) }}
           EOF
