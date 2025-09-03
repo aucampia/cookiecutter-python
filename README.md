@@ -119,6 +119,5 @@ docker compose run --build --rm devtools task configure validate:static
 
 
 ```bash
-RENOVATE_LOG_LEVEL=debug task renovate:env:run -- task renovate 2>&1 | tee renovate-output.log
-RENOVATE_LOG_LEVEL=debug task renovate:env:run -- docker compose run --rm -T renovate bash -c 'ssh git@github.com'
+RENOVATE_LOG_LEVEL=debug RENOVATE_AUTO_APPROVE=true task renovate:env:run -- task renovate 2>&1 | tee renovate-output.log
 ```

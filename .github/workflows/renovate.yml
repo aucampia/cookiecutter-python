@@ -37,7 +37,7 @@ env:
 
 permissions:
   contents: read
-  # pull-requests: write
+  pull-requests: write # This is here so PR's can be approved.
   # issues: write
   actions: read
   # security-events: read
@@ -72,8 +72,9 @@ jobs:
         env:
           RENOVATE_REPOSITORY_CACHE: ${{ github.event.inputs.repoCache || 'enabled' }}
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
-          # RENOVATE_GIT_SSH_PRIVATE_KEY: ${{ secrets.RENOVATE_GIT_SSH_PRIVATE_KEY }}
+          RENOVATE_GITHUB_ACTIONS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RENOVATE_LOG_LEVEL: ${{ github.event.inputs.logLevel || 'info' }}
+          RENOVATE_AUTO_APPROVE: "true"
 
       - uses: actions/upload-artifact@v4
         if: github.event.inputs.repoCache != 'disabled'

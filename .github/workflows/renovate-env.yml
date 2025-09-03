@@ -23,9 +23,9 @@ concurrency:
     ${{ github.workflow }}-
   cancel-in-progress: true
 
-# permissions:
+permissions:
 #   contents: write
-#   pull-requests: write
+  pull-requests: write
 #   issues: write
 #   actions: read
 #   security-events: read
@@ -44,6 +44,7 @@ jobs:
 
           {
             echo "RENOVATE_TOKEN=${RENOVATE_TOKEN@Q}"
+            echo "RENOVATE_GITHUB_ACTIONS_TOKEN=${RENOVATE_GITHUB_ACTIONS_TOKEN@Q}"
           } | gpg --encrypt --armor --recipient-file /var/tmp/gpg.pub > /var/tmp/renovate-env.asc
         env:
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}

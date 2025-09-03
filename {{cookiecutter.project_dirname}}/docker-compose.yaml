@@ -30,6 +30,7 @@ services:
     environment:
       # https://docs.renovatebot.com/config-overview/#logging-variables
       RENOVATE_TOKEN: ${RENOVATE_TOKEN}
+      RENOVATE_GITHUB_ACTIONS_TOKEN: ${RENOVATE_GITHUB_ACTIONS_TOKEN}
       RENOVATE_CONFIG_FILE: /srv/workspace/renovate-global.json5
       RENOVATE_REPOSITORY_CACHE: ${RENOVATE_REPOSITORY_CACHE:-enabled}
       LOG_LEVEL: ${RENOVATE_LOG_LEVEL:-info}
@@ -37,40 +38,50 @@ services:
     volumes:
       - .:/srv/workspace
       - renovate-tmp:/tmp/renovate
-    entrypoint: null
-    # command:
-    #   - bash
-    #   - -c
-    #   - |
-    #     set -Eeuo pipefail
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -Eeuo pipefail
+        mkdir -vp "$${HOME}/.config/git/hooks"
+        git config --global core.hooksPath "$${HOME}/.config/git/hooks"
+        cp -v /srv/workspace/devtools/renovate/githooks/* "$${HOME}/.config/git/hooks/"
+        chmod -R -v +x "$${HOME}/.config/git/hooks/"
 
-    #     echo -n > /tmp/renovate/branches.ndjson
+        exec "$${0}" "$${@}"
+    command:
+      - bash
+      - -c
+      - |
+        set -Eeuo pipefail
 
-    #     # Code below comes from:
-    #     # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/renovate-entrypoint.sh
-    #     # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/docker-entrypoint.sh
+        echo -n > /tmp/renovate/branches.ndjson
 
-    #     export GIT_TRACE=/tmp/renovate/git-trace.log
-    #     echo -n > /tmp/renovate/git-trace.log
-    #     echo -n > /tmp/renovate/githooks-output.log
+        # Code below comes from:
+        # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/renovate-entrypoint.sh
+        # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/docker-entrypoint.sh
 
-    #     dump_logs() {
-    #       if [ "$${LOG_LEVEL}" == "debug" ]; then
-    #         echo "GIT_TRACE logs:" >&2
-    #         cat /tmp/renovate/git-trace.log >&2
-    #         echo "GITHOOKS_OUTPUT logs:" >&2
-    #         cat /tmp/renovate/githooks-output.log >&2
-    #       fi
-    #     }
+        export GIT_TRACE=/tmp/renovate/git-trace.log
+        echo -n > /tmp/renovate/git-trace.log
+        echo -n > /tmp/renovate/githooks-output.log
 
-    #     trap dump_logs EXIT
+        dump_logs() {
+          if [ "$${LOG_LEVEL}" == "debug" ]; then
+            echo "GIT_TRACE logs:" >&2
+            cat /tmp/renovate/git-trace.log >&2
+            echo "GITHOOKS_OUTPUT logs:" >&2
+            cat /tmp/renovate/githooks-output.log >&2
+          fi
+        }
 
-    #     source /usr/local/etc/env
-    #     renovate
+        trap dump_logs EXIT
 
-    #     /srv/workspace/devtools/renovate/touch-branches.sh
+        source /usr/local/etc/env
+        renovate
 
-    #     echo "Renovate finished successfully." >&2
+        /srv/workspace/devtools/renovate/postprocess.sh
+
+        echo "Renovate finished successfully." >&2
 volumes:
   xdg-cache-home: {}
   # dot-venv: {}

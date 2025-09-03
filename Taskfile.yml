@@ -339,6 +339,7 @@ tasks:
           (cd "${TMP_DIR}"; gh run --repo "${GITHUB_REPOSITORY}" download "$(cat "${TMP_DIR}/run_id")" -n renovate-env)
         done
         source <(gpg --decrypt -i "${TMP_DIR}/renovate-env.asc" | tee /dev/stderr)
+        export RENOVATE_GITHUB_ACTIONS_TOKEN
         export RENOVATE_TOKEN
         {{.CLI_ARGS}}
 
