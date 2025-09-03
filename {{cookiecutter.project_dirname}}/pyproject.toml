@@ -26,7 +26,6 @@ structlog = "^25.4.0"
 # {% endif %}
 
 [tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
 codespell = "^2.4.1"
 mypy = "^1.16.1"
 pytest = "^8.4.1"

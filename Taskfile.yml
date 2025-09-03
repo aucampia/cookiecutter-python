@@ -24,10 +24,6 @@ tasks:
     desc: Update dependency ranges
     cmds:
       - "{{.POETRY}} up {{.CLI_ARGS}}"
-  black:
-    desc: Run black
-    cmds:
-      - '{{.RUN_PYTHON}} -m black {{if (ne (.CHECK | default "false") "false")}}--check --diff {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
   yamlfmt:
     desc: Run yamlfmt
     cmds:

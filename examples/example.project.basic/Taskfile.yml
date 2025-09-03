@@ -14,10 +14,6 @@ tasks:
     desc: Configure this project
     cmds:
       - "{{.POETRY}} install {{.CLI_ARGS}}"
-  black:
-    desc: Run black
-    cmds:
-      - '{{.RUN_PYTHON}} -m black {{if (ne (.CHECK | default "false") "false")}}--check --diff {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
   ruff:format:
     desc: Run ruff formatter
     cmds:

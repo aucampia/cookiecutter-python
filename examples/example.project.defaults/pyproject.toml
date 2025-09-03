@@ -19,14 +19,13 @@ python = "^3.9"
 pydantic = "^2.11.7"
 PyYAML = "^6.0.2"
 # 
-typer = "^0.16.0"
+typer = "^0.17.0"
 # 
 # 
 structlog = "^25.4.0"
 # 
 
 [tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
 codespell = "^2.4.1"
 mypy = "^1.16.1"
 pytest = "^8.4.1"
@@ -115,6 +114,7 @@ warn_untyped_fields = true
 # 
 
 [build-system]
-# requires = ["setuptools","poetry-core>=1.0.0"]
+# 
+requires = ["setuptools","poetry-core>=1.0.0"]
 # 
 build-backend = "poetry.core.masonry.api"

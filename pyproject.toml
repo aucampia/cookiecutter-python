@@ -14,7 +14,6 @@ python = "^3.13"
 PyYAML = "^6.0.2"
 
 [tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
 codespell = "^2.0.0"
 mypy = "^1.17.1"
 pytest = "^8.4.1"
@@ -22,7 +21,6 @@ pytest-cov = "^6.2.1"
 pytest-asyncio = "^1.1.0"
 types-PyYAML = "^6.0.12.20250822"
 pip-audit = "^2.9.0"
-ruff = "^0.12.10"
 typing-extensions = "^4.14.1"
 
 pytest-cookies = "^0.7.0"
@@ -35,7 +33,7 @@ chardet = "^5.2.0"
 [tool.poetry.group.templates.dependencies]
 typer = "^0.17.0"
 structlog = "^25.4.0"
-pydantic = "^2.11.7"
+pydantic = "~2.10.0"
 poethepoet = "^0.37.0"
 
 [tool.ruff]
