@@ -50,7 +50,7 @@ while IFS= read -r line; do
     if [ "${RENOVATE_AUTO_APPROVE}" == "true" ]
     then
         echo "Auto-approving PR for branch: ${BRANCH} ${PR_NUMBER}" >&2
-        curl --fail-with-body -L \
+        curl --silent --fail-with-body -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${RENOVATE_GITHUB_ACTIONS_TOKEN}" \

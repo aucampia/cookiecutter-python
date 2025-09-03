@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-#   contents: write
+  #   contents: write
   pull-requests: write
 #   issues: write
 #   actions: read
@@ -48,6 +48,7 @@ jobs:
           } | gpg --encrypt --armor --recipient-file /var/tmp/gpg.pub > /var/tmp/renovate-env.asc
         env:
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
+          RENOVATE_GITHUB_ACTIONS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_PUBLIC_KEY: ${{ github.event.inputs.gpg_public_key }}
       - uses: actions/upload-artifact@v4
         with:

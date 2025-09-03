@@ -196,18 +196,7 @@ tasks:
       # https://docs.renovatebot.com/modules/platform/github/#running-using-a-fine-grained-token
       # and
       # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#pre-filling-fine-grained-personal-access-token-details-using-url-parameters
-      PAT_URL: "https://github.com/settings/personal-access-tokens/new\
-        ?name={{print \"Renovate - \" .GITHUB_REPOSITORY | urlquery}}\
-        &description={{print \"Token used by Renovate for \" .GITHUB_REPOSITORY | urlquery}}\
-        &target_name={{(.REPO_INFO | mustFromJson).owner.login}}\
-        &expires_in=356\
-        &members=read\
-        &statuses=write\
-        &contents=write\
-        &vulnerability_alerts=read\
-        &issues=write\
-        &pull_requests=write\
-        &workflows=write"
+      PAT_URL: "https://github.com/settings/personal-access-tokens/new?name={{print \"Renovate - \" .GITHUB_REPOSITORY | urlquery}}&description={{print \"Token used by Renovate for \" .GITHUB_REPOSITORY | urlquery}}&target_name={{(.REPO_INFO | mustFromJson).owner.login}}&expires_in=356&members=read&statuses=write&contents=write&vulnerability_alerts=read&issues=write&pull_requests=write&workflows=write"
     cmds:
       - cmd: |
           cat <<'EOF'
