@@ -33,69 +33,44 @@ services:
       RENOVATE_CONFIG_FILE: /srv/workspace/renovate-global.json5
       RENOVATE_REPOSITORY_CACHE: ${RENOVATE_REPOSITORY_CACHE:-enabled}
       LOG_LEVEL: ${RENOVATE_LOG_LEVEL:-info}
-      RENOVATE_GIT_SSH_PRIVATE_KEY: ${RENOVATE_GIT_SSH_PRIVATE_KEY:-}
       RENOVATE_DRY_RUN: ${RENOVATE_DRY_RUN:-}
     volumes:
       - .:/srv/workspace
       - renovate-tmp:/tmp/renovate
-    entrypoint:
-      - bash
-      - -c
-      - |
-        set -Eeuo pipefail
+    entrypoint: null
+    # command:
+    #   - bash
+    #   - -c
+    #   - |
+    #     set -Eeuo pipefail
 
-        if [ -z "$${RENOVATE_GIT_SSH_PRIVATE_KEY:-}" ] ; then
-          echo "No SSH private key found, skipping SSH setup." >&2
-        else
-          echo "Setting up SSH private key." >&2
-          mkdir -p "$${HOME}/.ssh"
-          echo "$${RENOVATE_GIT_SSH_PRIVATE_KEY}" > "$${HOME}/.ssh/id_rsa"
-          chmod -R go-rwx "$${HOME}/.ssh"
-          ssh-keyscan -H github.com | tee /dev/stderr >> "$${HOME}/.ssh/known_hosts"
-        fi
+    #     echo -n > /tmp/renovate/branches.ndjson
 
-        git config --global user.email "renovate@renovate.invalid"
-        git config --global user.name "Renovate Bot"
+    #     # Code below comes from:
+    #     # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/renovate-entrypoint.sh
+    #     # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/docker-entrypoint.sh
 
-        mkdir -vp "$${HOME}/.config/git/hooks"
-        git config --global core.hooksPath "$${HOME}/.config/git/hooks"
-        cp -v /srv/workspace/devtools/renovate/githooks/* "$${HOME}/.config/git/hooks/"
-        chmod -R -v +x "$${HOME}/.config/git/hooks/"
+    #     export GIT_TRACE=/tmp/renovate/git-trace.log
+    #     echo -n > /tmp/renovate/git-trace.log
+    #     echo -n > /tmp/renovate/githooks-output.log
 
-        exec "$${0}" "$${@}"
-    command:
-      - bash
-      - -c
-      - |
-        set -Eeuo pipefail
+    #     dump_logs() {
+    #       if [ "$${LOG_LEVEL}" == "debug" ]; then
+    #         echo "GIT_TRACE logs:" >&2
+    #         cat /tmp/renovate/git-trace.log >&2
+    #         echo "GITHOOKS_OUTPUT logs:" >&2
+    #         cat /tmp/renovate/githooks-output.log >&2
+    #       fi
+    #     }
 
-        echo -n > /tmp/renovate/branches.ndjson
+    #     trap dump_logs EXIT
 
-        # Code below comes from:
-        # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/renovate-entrypoint.sh
-        # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/docker-entrypoint.sh
+    #     source /usr/local/etc/env
+    #     renovate
 
-        export GIT_TRACE=/tmp/renovate/git-trace.log
-        echo -n > /tmp/renovate/git-trace.log
-        echo -n > /tmp/renovate/githooks-output.log
+    #     /srv/workspace/devtools/renovate/touch-branches.sh
 
-        dump_logs() {
-          if [ "$${LOG_LEVEL}" == "debug" ]; then
-            echo "GIT_TRACE logs:" >&2
-            cat /tmp/renovate/git-trace.log >&2
-            echo "GITHOOKS_OUTPUT logs:" >&2
-            cat /tmp/renovate/githooks-output.log >&2
-          fi
-        }
-
-        trap dump_logs EXIT
-
-        source /usr/local/etc/env
-        renovate
-
-        /srv/workspace/devtools/renovate/touch-branches.sh
-
-        echo "Renovate finished successfully." >&2
+    #     echo "Renovate finished successfully." >&2
 volumes:
   xdg-cache-home: {}
   # dot-venv: {}
