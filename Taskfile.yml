@@ -219,10 +219,6 @@ tasks:
         echo "Paste your PAT here:"
         read -r RENOVATE_TOKEN
         gh secret set RENOVATE_TOKEN <<< "${RENOVATE_TOKEN}"
-      # - |
-      #   set -euo pipefail
-      #   NEW_TOKEN="$(gh auth token)"
-      #   gh secret set RENOVATE_TOKEN <<< "${NEW_TOKEN}"
 
   renovate:dry-run:
     cmds:

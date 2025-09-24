@@ -59,6 +59,12 @@ select = [
     "RUF", # Ruff
     "UP", # pyupgrade
     "FA", # flake8-future-annotations
+    "ANN", # flake8-annotations
+    "PLE", # Pylint Error
+    "FAST", # FastAPI
+    "ASYNC", # flake8-async
+    "B", # flake8-bugbear
+    "S", # flake8-bandit
 ]
 
 ignore = [
@@ -71,6 +77,11 @@ ignore = [
     # Disabled because this targets Python 3.9 or later
     "UP007", # Use `X | Y` for type annotations
     "UP045", # Use `X | None` for type annotations
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in {name}
+    "S101", # Use of assert detected.
+    "S404", # subprocess module is possibly insecure
+    "S607", # Starting a process with a partial executable path
+    "S403", # pickle, cPickle, dill, and shelve modules are possibly insecure
 ]
 
 [tool.ruff.lint.per-file-ignores]

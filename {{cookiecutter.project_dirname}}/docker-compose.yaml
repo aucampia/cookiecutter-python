@@ -44,6 +44,7 @@ services:
       - -c
       - |
         set -Eeuo pipefail
+
         mkdir -vp "$${HOME}/.config/git/hooks"
         git config --global core.hooksPath "$${HOME}/.config/git/hooks"
         cp -v /srv/workspace/devtools/renovate/githooks/* "$${HOME}/.config/git/hooks/"

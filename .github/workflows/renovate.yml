@@ -45,11 +45,7 @@ env:
 permissions:
   contents: read
   pull-requests: write # This is here so PR's can be approved.
-  # issues: write
   actions: read
-  # security-events: read
-  # statuses: write
-  # checks: read
 
 jobs:
   renovate:

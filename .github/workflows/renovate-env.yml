@@ -24,13 +24,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  #   contents: write
-  pull-requests: write
-#   issues: write
-#   actions: read
-#   security-events: read
-#   statuses: write
-#   checks: read
+  pull-requests: write # Needed for approving PRs
 
 jobs:
   renovate-env:
