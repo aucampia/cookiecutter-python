@@ -121,3 +121,9 @@ docker compose run --build --rm devtools task configure validate:static
 ```bash
 RENOVATE_LOG_LEVEL=debug RENOVATE_AUTO_APPROVE=true task renovate:env:run -- task renovate 2>&1 | tee renovate-output.log
 ```
+
+
+```bash
+go get -C devtools/ -u .
+go mod tidy -C devtools/
+```
