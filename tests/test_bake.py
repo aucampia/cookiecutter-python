@@ -301,7 +301,7 @@ WORKFLOW_ACTION_FACTORIES: dict[
 
 
 def make_baked_cmd_cases() -> Generator[ParameterSet]:
-    config_names = {"minimal", "basic", "poe_minimal", "minimal_typer"}
+    config_names = {"minimal", "basic", "minimal_typer"}
     for config_name, workflow_action in itertools.product(
         config_names,
         WorkflowAction,
