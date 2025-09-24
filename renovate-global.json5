@@ -36,24 +36,22 @@
                 "dependencies"
             ],
             "vulnerabilityAlerts": {
-                // Unfortunately we can't access the GitHub Dependabot
-                // Alerts API using the GitHub Actions token. So this
-                // won't work. Disabling it to avoid errors.
-                "enabled": false,
+                "enabled": true,
             },
             "platformAutomerge": true,
             "pinDigests": true,
             "osvVulnerabilityAlerts": true,
             "dependencyDashboardOSVVulnerabilitySummary": true,
-            "prConcurrentLimit": 3,
+            "prConcurrentLimit": 5,
             // https://docs.renovatebot.com/modules/manager/
             "enabledManagers": [
                 "docker-compose",
                 "pip-compile",
                 "poetry",
-                // "github-actions",
+                "github-actions",
                 "gomod",
                 "dockerfile",
+                "pip_requirements",
             ],
             "automerge": true,
             "automergeStrategy": "squash",
