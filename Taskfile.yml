@@ -302,7 +302,7 @@ tasks:
       - |
         set -euo pipefail
 
-        gh workflow run renovate-env.yml --field lifetime=300 --field "gpg_public_key=$(gpg --armor --export)" --ref main
+        gh workflow run renovate-env.yml --field lifetime=600 --field "gpg_public_key=$(gpg --armor --export)" --ref main
         RUN_ID=""
         while [ -z "${RUN_ID}" ]; do
           sleep 4
