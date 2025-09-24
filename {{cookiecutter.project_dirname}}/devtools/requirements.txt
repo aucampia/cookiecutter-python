@@ -439,9 +439,9 @@ poetry-core==2.2.1 \
     --hash=sha256:97e50d8593c8729d3f49364b428583e044087ee3def1e010c6496db76bd65ac5 \
     --hash=sha256:bdfce710edc10bfcf9ab35041605c480829be4ab23f5bc01202cfe5db8f125ab
     # via poetry
-poetryup==0.2.0 \
-    --hash=sha256:614b0bc5e4e0b2002655d3a99fac41fa5c61dcb2c56239135007d51d286c6b81 \
-    --hash=sha256:b112fadb090fb8f1e275905a20fa4d4679120ba2a53998cd2b9635fdfa5194cf
+poetryup==0.12.7 \
+    --hash=sha256:7903089e1c241ac04a1d199b0aef78bb1194f3f510c0781aa4cf5e961eff59d2 \
+    --hash=sha256:8d428505c3a5ace59451f2c901876dcf6e5589e50d807fc30f41003c4dfea37b
     # via -r requirements.in
 pycparser==2.23 \
     --hash=sha256:78816d4f24add8f10a06d6f05b4d424ad9e96cfebf68a4ddc99c65c0720d00c2 \
