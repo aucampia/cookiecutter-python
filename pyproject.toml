@@ -21,7 +21,7 @@ pytest-cov = "^7.0.0"
 pytest-asyncio = "^1.2.0"
 types-PyYAML = "^6.0.12.20250915"
 pip-audit = "^2.9.0"
-ruff = "^0.13.1"
+ruff = "^0.14.0"
 typing-extensions = "^4.15.0"
 
 pytest-cookies = "^0.7.0"
