@@ -57,6 +57,8 @@ services:
       - |
         set -Eeuo pipefail
 
+        declare -p LOG_LEVEL RENOVATE_REPOSITORY_CACHE RENOVATE_AUTO_APPROVE RENOVATE_DRY_RUN >&2
+
         echo -n > /tmp/renovate/branches.ndjson
 
         # Code below comes from:

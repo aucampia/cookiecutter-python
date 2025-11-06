@@ -38,25 +38,36 @@
             "vulnerabilityAlerts": {
                 "enabled": true,
             },
-            "platformAutomerge": true,
             "pinDigests": true,
             "osvVulnerabilityAlerts": true,
             "dependencyDashboardOSVVulnerabilitySummary": true,
             "prConcurrentLimit": 5,
             // https://docs.renovatebot.com/modules/manager/
             "enabledManagers": [
-                "docker-compose",
+                "pep621",
                 "pip-compile",
                 "poetry",
                 "github-actions",
                 "gomod",
                 "dockerfile",
+                "docker-compose",
                 "pip_requirements",
             ],
+            "lockFileMaintenance": {
+                "enabled": true,
+                "schedule": ["* * * * *"],
+            },
             "automerge": true,
             "automergeStrategy": "squash",
+            "platformAutomerge": true,
             "rebaseWhen": "conflicted",
-            "packageRules": []
+            "postUpdateOptions": ["gomodTidy"],
+            "packageRules": [
+                                {
+                    "matchManagers": ["pep621", "pip_requirements", "gomod", "poetry"],
+                    "rangeStrategy": "update-lockfile"
+                },
+            ]
         }
     ]
 }

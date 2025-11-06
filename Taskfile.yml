@@ -236,6 +236,10 @@ tasks:
 
   renovate:report:export:
     desc: Export the Renovate report
+    summary: |
+      Export the Renovate report.
+
+      This task exports the Renovate report to a file.
     cmds:
       - |
         set -euo pipefail
@@ -245,6 +249,10 @@ tasks:
 
   renovate:cache:export:
     desc: Export the Renovate cache
+    summary: |
+      Export the Renovate cache
+
+      This task exports the Renovate cache to a file.
     cmds:
       - |
         set -euo pipefail
@@ -259,6 +267,10 @@ tasks:
 
   renovate:cache:import:
     desc: Import the Renovate cache
+    summary: |
+      Import the Renovate cache
+
+      This task imports the Renovate cache from a file.
     cmds:
       - |
         set -euo pipefail
