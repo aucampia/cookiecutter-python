@@ -21,7 +21,7 @@ pytest-cov = "^7.0.0"
 pytest-asyncio = "^1.2.0"
 types-PyYAML = "^6.0.12.20250915"
 pip-audit = "^2.9.0"
-ruff = "^0.14.0"
+ruff = "^0.14.3"
 typing-extensions = "^4.15.0"
 
 pytest-cookies = "^0.7.0"
@@ -32,9 +32,9 @@ types-frozendict = "^2.0.9"
 chardet = "^5.2.0"
 
 [tool.poetry.group.templates.dependencies]
-typer = "^0.19.2"
-structlog = "^25.4.0"
-pydantic = "~2.12.1"
+typer = "^0.20.0"
+structlog = "^25.5.0"
+pydantic = "^2.12.4"
 poethepoet = "^0.37.0"
 
 [tool.ruff]

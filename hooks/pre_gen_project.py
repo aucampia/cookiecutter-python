@@ -3,7 +3,6 @@
 import json
 import logging
 import os
-import os.path
 import sys
 from pathlib import Path
 
