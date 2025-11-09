@@ -18,7 +18,7 @@ RUN \
 FROM docker.io/mikefarah/yq:4@sha256:75b3a60dce1fa4641b0f02bdb4465eddc5da95e62028118a292239ca8e3921e5 AS yq
 
 # ... {% if False %}
-FROM ghcr.io/astral-sh/uv:bookworm@sha256:af4c62c2a4e90176cfbd5e335d3daa3d4681f0a5035e19042c7889c0cf7d2ccf AS python
+FROM ghcr.io/astral-sh/uv:bookworm@sha256:e8f6f6ef82f823f6870659b5f1d8c0b4d277bb2775789dbbf900403ce1cf0278 AS python
 # {% else %}{{"\n"}}FROM docker.io/library/python:{{ cookiecutter.python_version }} AS python{% endif %}
 ENTRYPOINT [  ]
 
