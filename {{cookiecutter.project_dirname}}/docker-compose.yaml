@@ -23,7 +23,7 @@ services:
       - dot-ruff-cache:/srv/workspace/.ruff_cache
       - dot-tox:/srv/workspace/.tox
   renovate:
-    image: docker.io/renovate/renovate:latest@sha256:257a45a875739eec774ae522cda71fb96d6593fc6841083514306f98e431d296
+    image: docker.io/renovate/renovate:latest@sha256:c6950364d634f956a88238f46510f6a9a77809f3d4427c68110b7bd750afc759
     profiles:
       - renovate
     restart: "no"
