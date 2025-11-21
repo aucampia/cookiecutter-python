@@ -301,7 +301,7 @@ WORKFLOW_ACTION_FACTORIES: dict[
 
 
 def make_baked_cmd_cases() -> Generator[ParameterSet]:
-    config_names = {"minimal", "basic", "minimal_typer"}
+    config_names = {"minimal", "basic", "minimal_typer", "nocode"}
     for config_name, workflow_action in itertools.product(
         config_names,
         WorkflowAction,
@@ -309,6 +309,9 @@ def make_baked_cmd_cases() -> Generator[ParameterSet]:
         extra_context = load_test_config(config_name)["default_context"]
         if config_name == "everything":
             extra_context["init_git"] = "y"
+        if config_name == "nocode" and workflow_action == WorkflowAction.CLI:
+            # no CLI to test
+            continue
         yield pytest.param(
             extra_context, workflow_action, id=f"{config_name}-{workflow_action}"
         )

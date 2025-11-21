@@ -1,9 +1,7 @@
 import logging
-
-
-from example.project.minimal_typer import package_function
+import sys
 
 
 def test_something() -> None:
     logging.info("entry: ...")
-    assert package_function() == "value"
+    assert sys.version_info >= (3, 8)

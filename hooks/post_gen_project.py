@@ -33,6 +33,7 @@ class Variant(enum.Enum):
     BASIC = "basic"
     MINIMAL = "minimal"
     MINIMAL_TYPER = "minimal_typer"
+    NOCODE = "nocode"
 
 
 class BuildTool(enum.Enum):

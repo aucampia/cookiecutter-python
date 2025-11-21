@@ -1,31 +1,24 @@
 # https://python-poetry.org/docs/pyproject/
 # https://www.python.org/dev/peps/pep-0621/
 [tool.poetry]
-name = "{{ cookiecutter.project_name }}"
-version = "{{ cookiecutter.version }}"
+name = "example.project.nocode"
+version = "0.0.0"
 description = ""
 authors = []
-license = "{{ cookiecutter.sdpx_license_identifier }}"
+license = "UNLICENSED"
 readme = "README.md"
 packages = [
     {include = "*", from = "src"},
 ]
 
-# {% if cookiecutter.variant not in ["nocode"] %}
-[tool.poetry.scripts]
-"{{ cookiecutter.cli_name }}" = "{{ cookiecutter.python_package_fqname }}.cli:main"
-# {% endif %}
+# 
 
 [tool.poetry.dependencies]
-python = "^{{ cookiecutter.python_version }}"
+python = "^3.9"
 pydantic = "^2.12.4"
 PyYAML = "^6.0.2"
-# {% if cookiecutter.variant in ["basic", "everything", "minimal_typer"] %}
-typer = "^0.20.0"
-# {% endif %}
-# {% if cookiecutter.variant in ["basic", "everything"] %}
-structlog = "^25.5.0"
-# {% endif %}
+# 
+# 
 
 [tool.poetry.group.dev.dependencies]
 codespell = "^2.4.1"
@@ -37,9 +30,7 @@ types-PyYAML = "^6.0.12.20250915"
 pip-audit = "^2.9.0"
 ruff = "^0.14.3"
 typing-extensions = "^4.15.0"
-# {% if cookiecutter.build_tool == "poe" %}
-poethepoet = "^0.37.0"
-# {% endif %}
+# 
 
 [tool.codespell]
 ignore-words = ".codespellignore"
@@ -49,7 +40,7 @@ ignore-words = ".codespellignore"
 line-length = 88
 indent-width = 4
 
-target-version = "py{{ cookiecutter.python_version | replace('.', '') }}"
+target-version = "py39"
 [tool.ruff.lint]
 # https://beta.ruff.rs/docs/configuration/
 preview = true
@@ -99,7 +90,7 @@ asyncio_mode = "auto"
 # https://mypy.readthedocs.io/en/stable/config_file.html
 files = "src,tests"
 mypy_path = "src"
-python_version = "{{ cookiecutter.python_version }}"
+python_version = "3.9"
 strict = true
 warn_unreachable = true
 warn_unused_configs = true
@@ -113,50 +104,10 @@ init_typed = true
 warn_required_dynamic_aliases = true
 warn_untyped_fields = true
 
-# {% if cookiecutter.build_tool == "poe" %}
-[tool.poe.env]
-PYTHON_SOURCE="src tests"
+# 
 
-[tool.poe.tasks.validate-static]
-help = "perform static validation"
-sequence = [
-    { cmd = "mypy --show-error-context --show-error-codes ${PYTHON_SOURCE}" },
-    { cmd = "black --check --diff ${PYTHON_SOURCE}" },
-    { cmd = "ruff check --config pyproject.toml ${PYTHON_SOURCE}" },
-    # { shell = "poetry export --without-hashes --with dev --format requirements.txt | poetry run pip-audit --requirement /dev/stdin --no-deps --strict --desc on" },
-]
-
-[tool.poe.tasks.test]
-help = "run tests"
-sequence = [
-    { cmd = "pytest" },
-]
-
-[tool.poe.tasks.validate-fix]
-help = "fix auto fixable validation errors"
-sequence = [
-    { cmd = "ruff check --config pyproject.toml --fix ${PYTHON_SOURCE}" },
-    { cmd = "black ${PYTHON_SOURCE}" },
-]
-
-
-[tool.poe.tasks.validate]
-help = "validate everything"
-sequence = [
-    { ref = "validate-static" },
-    { ref = "test" },
-]
-
-[tool.poe.tasks.fix-and-validate]
-help = "fix things then validate"
-sequence = [
-    { ref = "validate-fix" },
-    { ref = "validate" },
-]
-# {% endif %}
-
-# {% if cookiecutter.use_poetry_dynamic_versioning == "y" %}
-# {% raw %}
+# 
+# 
 [tool.poetry-dynamic-versioning]
 enable = true
 vcs = "git"
@@ -169,13 +120,11 @@ format-jinja = """
 """
 [tool.poetry-dynamic-versioning.substitution]
 files=["src/**/_version.py"]
-# {% endraw %}
-# {% endif %}
+# 
+# 
 
 [build-system]
-# {% if cookiecutter.use_poetry_dynamic_versioning == "y" %}
+# 
 requires = ["setuptools","poetry-core>=1.0.0","poetry-dynamic-versioning"]
-# {% else %}{% if 1 == 0 %}
-# {% else %}{{ "\n" }}{% endif %}requires = ["setuptools","poetry-core>=1.0.0"]
-# {% endif %}
+# 
 build-backend = "poetry.core.masonry.api"

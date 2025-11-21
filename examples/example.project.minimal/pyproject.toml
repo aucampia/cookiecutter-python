@@ -11,8 +11,10 @@ packages = [
     {include = "*", from = "src"},
 ]
 
+# 
 [tool.poetry.scripts]
 "example.project.minimal-cli" = "example.project.minimal.cli:main"
+# 
 
 [tool.poetry.dependencies]
 python = "^3.9"

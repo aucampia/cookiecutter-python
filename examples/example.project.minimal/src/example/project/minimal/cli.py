@@ -5,8 +5,6 @@ import os
 import sys
 from dataclasses import dataclass, field
 
-from ._version import __version__
-
 logger = logging.getLogger(__name__)
 
 
@@ -26,9 +24,9 @@ class Application:
             help="increase verbosity level",
             default=False,
         )
-        parser.add_argument(
-            "--version", action="version", version=f"%(prog)s {__version__}"
-        )
+        # parser.add_argument(
+        #     "--version", action="version", version=f"%(prog)s {__version__}"
+        # )
         parser.set_defaults(handler=self.handle)
         current_parser = parser
         current_subparsers = current_parser.add_subparsers()

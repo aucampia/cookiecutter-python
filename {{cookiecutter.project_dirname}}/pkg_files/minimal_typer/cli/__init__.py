@@ -7,7 +7,6 @@ from typing import Annotated
 
 import typer
 
-from .._version import __version__
 from .sub import cli_sub
 
 logger = logging.getLogger(__name__)
@@ -42,11 +41,6 @@ def cli_callback(
         "log info: logging_effective_level = %s",
         logging.getLogger("").getEffectiveLevel(),
     )
-
-
-@cli.command("version")
-def cli_version(ctx: typer.Context) -> None:
-    sys.stderr.write(f"{__version__}\n")
 
 
 def main() -> None:

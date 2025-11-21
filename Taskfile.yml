@@ -129,20 +129,31 @@ tasks:
           [ -n {{.EXAMPLE_NAME | default "" | shellQuote}} ]
         msg: "EXAMPLE_NAME is required"
     cmds:
-      - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} install --sync)"
-      - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run task validate:fix validate)"
-      - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli --help)"
-      - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli sub leaf --help)"
+      - cmd: |
+          set -euo pipefail
+          cd examples/example.project.{{.EXAMPLE_NAME}}
+          {{.POETRY}} install --sync
+          {{.POETRY}} run task validate:fix validate
+          if [ "{{.EXAMPLE_NAME}}" != "nocode" ] ; then
+            {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli --help
+            {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli sub leaf --help
+          else
+            echo "No CLI to run for nocode example."
+          fi
+      # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} install --sync)"
+      # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run task validate:fix validate)"
+      # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli --help)"
+      # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli sub leaf --help)"
   examples:generate:
     desc: Generate all examples
     cmds:
-      - for: ['basic', 'defaults', 'minimal', 'minimal_typer']
+      - for: ['basic', 'defaults', 'minimal', 'minimal_typer', 'nocode']
         task: example:generate
         vars: {EXAMPLE_NAME: "{{.ITEM}}"}
   examples:run:
     desc: Run all examples
     cmds:
-      - for: ['basic', 'defaults', 'minimal', 'minimal_typer']
+      - for: ['basic', 'defaults', 'minimal', 'minimal_typer', 'nocode']
         task: example:run
         vars: {EXAMPLE_NAME: "{{.ITEM}}"}
   examples:clean:

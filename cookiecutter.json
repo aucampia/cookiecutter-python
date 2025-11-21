@@ -10,7 +10,7 @@
   "python_version": "3.9",
   "git_init": "y",
   "git_commit": "y",
-  "variant": ["basic", "minimal", "minimal_typer"],
+  "variant": ["basic", "minimal", "minimal_typer", "nocode"],
   "build_tool": ["gnu-make", "go-task", "poe"],
   "use_poetry_dynamic_versioning": "n",
   "use_oci_devtools": "n"
