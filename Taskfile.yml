@@ -7,23 +7,22 @@ env:
   RENOVATE_REPORT_FILE: '{{.RENOVATE_REPORT_FILE | default "/tmp/renovate-report.json"}}'
 vars:
   PYTHON: python3
-  POETRY: "poetry"
-  RUN_PREFIX: "{{.POETRY}} run"
+  RUN_PREFIX: "uv run"
   RUN_PYTHON: "{{.RUN_PREFIX}} python"
   PY_SOURCE: "hooks tests link_project/pkg_files"
 tasks:
   configure:
     desc: Configure this project
     cmds:
-      - "{{.POETRY}} install {{.CLI_ARGS}}"
+      - "uv sync {{.CLI_ARGS}}"
   update:
     desc: Update dependencies
     cmds:
-      - "{{.POETRY}} update {{.CLI_ARGS}}"
-  update:ranges:
-    desc: Update dependency ranges
-    cmds:
-      - "{{.POETRY}} up {{.CLI_ARGS}}"
+      - uv lock --upgrade {{.CLI_ARGS}}
+  # update:ranges:
+  #   desc: Update dependency ranges
+  #   cmds:
+  #     - "{{.POETRY}} up {{.CLI_ARGS}}"
   yamlfmt:
     desc: Run yamlfmt
     cmds:
@@ -48,7 +47,7 @@ tasks:
     desc: Run pip audit
     cmds:
       - |
-        {{.POETRY}} export --without-hashes --with dev --format requirements.txt | \
+        uv export --all-groups --no-emit-project --format requirements.txt | \
           {{.RUN_PYTHON}} -m pip_audit --requirement /dev/stdin --no-deps --strict --desc on
   test:
     desc: Run tests
@@ -82,10 +81,10 @@ tasks:
     cmds:
       - task: validate:fix
       - task: validate
-  poetry:clean:
-    desc: Clean poetry
+  uv:clean:
+    desc: Clean virtualenv
     cmds:
-      - "{{.POETRY}} env remove --all"
+      - uv run --no-sync printenv VIRTUAL_ENV | xargs -t rm -rv
   clean:
     desc: Clean everything
     cmds:
@@ -95,15 +94,15 @@ tasks:
         vars: {RIMRAF_TARGET: ".pytest_cache"}
       - task: _rimraf
         vars: {RIMRAF_TARGET: ".venv"}
-      - task: poetry:clean
+      - task: uv:clean
   default:
     desc: Run validate
     cmds:
       - task: validate
-  poetry:
-    desc: Run poetry
+  uv:
+    desc: Run uv
     cmds:
-      - "{{.POETRY}} {{.CLI_ARGS}}"
+      - "uv {{.CLI_ARGS}}"
   venv:run:
     desc: Run args in the venv
     cmds:
@@ -132,18 +131,18 @@ tasks:
       - cmd: |
           set -euo pipefail
           cd examples/example.project.{{.EXAMPLE_NAME}}
-          {{.POETRY}} install --sync
-          {{.POETRY}} run task validate:fix validate
+          uv sync
+          uv run task validate:fix validate
           if [ "{{.EXAMPLE_NAME}}" != "nocode" ] ; then
-            {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli --help
-            {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli sub leaf --help
+            uv run example.project.{{.EXAMPLE_NAME}}-cli --help
+            uv run example.project.{{.EXAMPLE_NAME}}-cli sub leaf --help
           else
             echo "No CLI to run for nocode example."
           fi
-      # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} install --sync)"
-      # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run task validate:fix validate)"
-      # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli --help)"
-      # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli sub leaf --help)"
+        # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} install --sync)"
+        # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run task validate:fix validate)"
+        # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli --help)"
+        # - "(cd examples/example.project.{{.EXAMPLE_NAME}} && {{.POETRY}} run example.project.{{.EXAMPLE_NAME}}-cli sub leaf --help)"
   examples:generate:
     desc: Generate all examples
     cmds:

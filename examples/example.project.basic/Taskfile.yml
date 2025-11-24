@@ -4,16 +4,19 @@
 # 
 version: "3"
 vars:
-  PYTHON: python
-  POETRY: "poetry"
-  RUN_PREFIX: "{{.POETRY}} run"
+  PYTHON: python3
+  RUN_PREFIX: "uv run"
   RUN_PYTHON: "{{.RUN_PREFIX}} python"
   PY_SOURCE: "src tests"
 tasks:
   configure:
     desc: Configure this project
     cmds:
-      - "{{.POETRY}} install {{.CLI_ARGS}}"
+      - "uv sync {{.CLI_ARGS}}"
+  update:
+    desc: Update dependencies
+    cmds:
+      - uv lock --upgrade {{.CLI_ARGS}}
   ruff:format:
     desc: Run ruff formatter
     cmds:
@@ -34,7 +37,7 @@ tasks:
     desc: Run pip audit
     cmds:
       - |
-        {{.POETRY}} export --without-hashes --with dev --format requirements.txt | \
+        uv export --all-groups --no-emit-project --format requirements.txt | \
           {{.RUN_PYTHON}} -m pip_audit --requirement /dev/stdin --no-deps --strict --desc on
   test:
     desc: Run tests
@@ -65,10 +68,10 @@ tasks:
     cmds:
       - task: validate:fix
       - task: validate
-  poetry:clean:
-    desc: Clean poetry
+  uv:clean:
+    desc: Clean virtualenv
     cmds:
-      - "{{.POETRY}} env remove --all"
+      - uv run --no-sync printenv VIRTUAL_ENV | xargs -t rm -rv
   clean:
     desc: Clean everything
     cmds:
@@ -78,15 +81,15 @@ tasks:
         vars: {RIMRAF_TARGET: ".pytest_cache"}
       - task: _rimraf
         vars: {RIMRAF_TARGET: ".venv"}
-      - task: poetry:clean
+      - task: uv:clean
   default:
     desc: Run validate
     cmds:
       - task: validate
-  poetry:
-    desc: Run poetry
+  uv:
+    desc: Run uv
     cmds:
-      - "{{.POETRY}} {{.CLI_ARGS}}"
+      - "uv {{.CLI_ARGS}}"
   cli:
     desc: Run cli
     cmds:

@@ -1,6 +1,1 @@
-poetry
-{% if cookiecutter.use_poetry_dynamic_versioning == "y" -%}
-poetry-dynamic-versioning
-jinja2
-dunamai<1.6.0
-{%- endif %}
+uv

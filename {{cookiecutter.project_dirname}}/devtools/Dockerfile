@@ -48,13 +48,7 @@ ENV UV_PYTHON_INSTALL_DIR=/usr/local/share/uv/python
 ENV UV_TOOL_BIN_DIR=/usr/local/bin
 ENV UV_TOOL_DIR=/usr/local/share/uv/tools
 
-RUN uv python install python3 python3.13
-
 COPY requirements.txt /var/tmp/build/requirements.txt
-RUN uv tool install \
-    --constraints /var/tmp/build/requirements.txt \
-    --python=3.13 \
-    --with='poetry-plugin-up' poetry
 
 COPY --from=yq /usr/bin/yq /usr/local/bin/
 COPY --from=golang /usr/local/bin/goenv.sh /usr/local/bin/goenv.sh

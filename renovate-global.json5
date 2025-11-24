@@ -46,7 +46,6 @@
             "enabledManagers": [
                 "pep621",
                 "pip-compile",
-                "poetry",
                 "github-actions",
                 "gomod",
                 "dockerfile",
@@ -55,18 +54,26 @@
             ],
             "lockFileMaintenance": {
                 "enabled": true,
-                "schedule": ["* * * * *"],
+                "schedule": [
+                    "* * * * *"
+                ],
             },
             "automerge": true,
             "automergeStrategy": "squash",
             "platformAutomerge": true,
             "rebaseWhen": "conflicted",
-            "postUpdateOptions": ["gomodTidy"],
+            "postUpdateOptions": [
+                "gomodTidy"
+            ],
             "packageRules": [
-                                {
-                    "matchManagers": ["pep621", "pip_requirements", "gomod", "poetry"],
+                {
+                    "matchManagers": [
+                        "pep621",
+                        "pip_requirements",
+                        "gomod"
+                    ],
                     "rangeStrategy": "update-lockfile"
-                },
+                }
             ]
         }
     ]
