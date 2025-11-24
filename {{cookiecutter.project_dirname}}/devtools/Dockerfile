@@ -47,6 +47,7 @@ ENV UV_PYTHON_BIN_DIR=/usr/local/bin
 ENV UV_PYTHON_INSTALL_DIR=/usr/local/share/uv/python
 ENV UV_TOOL_BIN_DIR=/usr/local/bin
 ENV UV_TOOL_DIR=/usr/local/share/uv/tools
+ENV UV_LINK_MODE=copy
 
 COPY requirements.txt /var/tmp/build/requirements.txt
 
