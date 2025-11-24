@@ -10,7 +10,7 @@ default_context:
   project_short_description: example.project.defaults
   project_url: https://example.com/project
   python_package_fqname: example.project.defaults
-  python_version: '3.9'
+  python_version: '3.10'
   sdpx_license_identifier: UNLICENSED
   use_oci_devtools: n
   variant: basic

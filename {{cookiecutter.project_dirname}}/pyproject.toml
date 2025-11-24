@@ -3,7 +3,7 @@
 # {% if 1 == 0 %}
 name = "template"
 version = "9.9.9"
-requires-python = ">=3.13,<4"
+requires-python = ">=3.10,<4"
 # {% else %}{% if 1 == 0 %}
 # {% else %}{{ "\n" }}{% endif %}name = "{{ cookiecutter.project_name }}"{{ "\n" }}version = "{{ cookiecutter.version }}"{{ "\n" }}requires-python = ">={{ cookiecutter.python_version }},<4"
 # {% endif %}
