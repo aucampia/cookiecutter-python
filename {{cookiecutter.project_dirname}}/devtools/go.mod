@@ -6,7 +6,7 @@ toolchain go1.25.4
 
 require (
 	github.com/go-task/task/v3 v3.45.5
-	github.com/google/yamlfmt v0.17.2
+	github.com/google/yamlfmt v0.20.0
 	mvdan.cc/sh/v3 v3.12.0
 )
 
