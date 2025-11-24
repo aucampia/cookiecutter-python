@@ -15,7 +15,7 @@ RUN \
     find "${GOBIN}" && \
     true
 
-FROM docker.io/mikefarah/yq:4@sha256:f7fe014cd27b255ee16416999a7cb7eb29dd30f6f61a331ee3e09febf80ee1de AS yq
+FROM docker.io/mikefarah/yq:4@sha256:68e5dcd865edc08856d056bf002de1ba8488d22697379b6520bdbbd3d03f083a AS yq
 
 # ... {% if False %}
 FROM ghcr.io/astral-sh/uv:bookworm@sha256:333a52dddc0b1b957b385201dd3baad65f68e63bbe1705879a9931e65bed25c6 AS python
