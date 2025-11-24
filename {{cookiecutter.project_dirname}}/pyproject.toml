@@ -3,13 +3,13 @@
 # {% if 1 == 0 %}
 name = "template"
 version = "9.9.9"
+requires-python = ">=3.13,<4"
 # {% else %}{% if 1 == 0 %}
-# {% else %}{{ "\n" }}{% endif %}name = "{{ cookiecutter.project_name }}"{{ "\n" }}version = "{{ cookiecutter.version }}"
+# {% else %}{{ "\n" }}{% endif %}name = "{{ cookiecutter.project_name }}"{{ "\n" }}version = "{{ cookiecutter.version }}"{{ "\n" }}requires-python = ">={{ cookiecutter.python_version }},<4"
 # {% endif %}
 
 description = ""
 authors = []
-requires-python = ">={{ cookiecutter.python_version }},<4"
 readme = "README.md"
 # {% if cookiecutter.sdpx_license_identifier != "UNLICENSED" %}
 license = "{{ cookiecutter.sdpx_license_identifier }}"
