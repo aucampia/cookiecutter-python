@@ -1,7 +1,12 @@
 # https://www.python.org/dev/peps/pep-0621/
 [project]
-name = "{{ cookiecutter.project_name }}"
-version = "{{ cookiecutter.version }}"
+# {% if 1 == 0 %}
+name = "template"
+version = "9.9.9"
+# {% else %}{% if 1 == 0 %}
+# {% else %}{{ "\n" }}{% endif %}name = "{{ cookiecutter.project_name }}"{{ "\n" }}version = "{{ cookiecutter.version }}"
+# {% endif %}
+
 description = ""
 authors = []
 requires-python = ">={{ cookiecutter.python_version }},<4"
