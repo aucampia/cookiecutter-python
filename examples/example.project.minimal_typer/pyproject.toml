@@ -1,7 +1,10 @@
 # https://www.python.org/dev/peps/pep-0621/
 [project]
+# 
 name = "example.project.minimal_typer"
 version = "0.0.0"
+# 
+
 description = ""
 authors = []
 requires-python = ">=3.9,<4"
