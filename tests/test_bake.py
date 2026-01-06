@@ -83,8 +83,8 @@ def hash_path(
     hash: Callable[[], hashlib._Hash] = hashlib.sha256,
 ) -> str:
     hasher = hash()
-    for _dirpath, dirnames, filenames in os.walk(root):
-        dirpath = Path(_dirpath)
+    for dirpath_, dirnames, filenames in os.walk(root):
+        dirpath = Path(dirpath_)
         logging.debug("exclude_subdirs = %s", exclude_subdirs)
         for dirname in list(dirnames):
             relative_dirname = (dirpath / dirname).relative_to(root)
