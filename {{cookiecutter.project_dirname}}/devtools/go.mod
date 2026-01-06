@@ -6,7 +6,7 @@ toolchain go1.25.5
 
 require (
 	github.com/go-task/task/v3 v3.46.4
-	github.com/google/yamlfmt v0.20.0
+	github.com/google/yamlfmt v0.21.0
 	mvdan.cc/sh/v3 v3.12.0
 )
 
@@ -83,6 +83,7 @@ require (
 	github.com/ulikunitz/xz v0.5.15 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.3 // indirect
 	go.yaml.in/yaml/v4 v4.0.0-rc.3 // indirect
 	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/oauth2 v0.27.0 // indirect
@@ -100,4 +101,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	mvdan.cc/editorconfig v0.3.0 // indirect
 	mvdan.cc/sh/moreinterp v0.0.0-20251109230715-65adef8e2c5b // indirect
+	sigs.k8s.io/yaml v1.6.0 // indirect
 )
