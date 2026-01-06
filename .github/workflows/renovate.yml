@@ -77,7 +77,7 @@ jobs:
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
           RENOVATE_GITHUB_ACTIONS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RENOVATE_LOG_LEVEL: ${{ github.event.inputs.logLevel || 'info' }}
-          RENOVATE_AUTO_APPROVE: "${{ github.event.inputs.autoApprove || 'true' }}"
+          RENOVATE_AUTO_APPROVE: "${{ github.event.inputs.autoApprove || 'false' }}"
 
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: github.event.inputs.repoCache != 'disabled'

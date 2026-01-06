@@ -10,14 +10,14 @@
     "allowedCommands": [
         ".*",
     ],
-    // We use the report file to filter branches collected by the
-    // pre-push git hook. We only "touch" branches that have a report
-    // entry and was collected by the pre-push git hook.
+    // The report file is used to filter branches collected by the
+    // pre-push git hook. Only branches that have a report entry and was
+    // collected by the pre-push git hook will be "touched".
     "reportPath": "/tmp/renovate/report.json",
     "reportType": "file",
     // By default, Renovate will use `--no-verify` to skip git hooks
-    // when doing "commit" and "push", we are however using the pre-push
-    // git hook to collect modified branches so we can "touch" them to
+    // when doing "commit" and "push", but the pre-push git hook is used
+    // to collect modified branches so that they can be "touched" to
     // trigger the CI pipeline. This overwrites the default so that it's
     // just "commit" that uses `--no-verify`.
     "gitNoVerify": [

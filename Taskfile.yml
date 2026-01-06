@@ -2,6 +2,7 @@
 # https://pkg.go.dev/text/template
 # https://go-task.github.io/slim-sprig/
 version: "3"
+set: [errexit, nounset, pipefail]
 env:
   RENOVATE_CACHE_ARCHIVE: '{{.RENOVATE_CACHE_ARCHIVE | default "/tmp/renovate-cache.tar.gz"}}'
   RENOVATE_REPORT_FILE: '{{.RENOVATE_REPORT_FILE | default "/tmp/renovate-report.json"}}'
@@ -240,7 +241,10 @@ tasks:
   renovate:
     desc: Run renovate
     cmds:
-      # - task: renovate:cache:import
+      - |
+        echo "RENOVATE_REPOSITORY_CACHE=${RENOVATE_REPOSITORY_CACHE@Q}" >&2
+        echo "RENOVATE_LOG_LEVEL=${RENOVATE_LOG_LEVEL@Q}" >&2
+        echo "RENOVATE_AUTO_APPROVE=${RENOVATE_AUTO_APPROVE@Q}" >&2
       - docker compose run --quiet-build --quiet-pull -T --rm renovate
       - task: renovate:cache:export
 
