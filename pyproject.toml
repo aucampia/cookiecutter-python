@@ -97,6 +97,7 @@ ignore = [
     "S404", # subprocess module is possibly insecure
     "S607", # Starting a process with a partial executable path
     "S403", # pickle, cPickle, dill, and shelve modules are possibly insecure
+    "RUF067", # __init__ module should not contain any code
 ]
 
 [tool.ruff.lint.per-file-ignores]
