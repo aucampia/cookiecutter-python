@@ -2,7 +2,7 @@ module devtools.invalid
 
 go 1.24.6
 
-toolchain go1.25.6
+toolchain go1.25.7
 
 require (
 	github.com/go-task/task/v3 v3.48.0
