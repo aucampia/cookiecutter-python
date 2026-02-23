@@ -19,7 +19,7 @@ dependencies = [
     "pydantic>=2.12.5,<3",
     "PyYAML>=6.0.3,<7",
 # {% if cookiecutter.variant in ["basic", "everything", "minimal_typer"] %}
-    "typer>=0.21.1,<0.22",
+    "typer>=0.24.1,<0.25",
 # {% endif %}
 # {% if cookiecutter.variant in ["basic", "everything"] %}
     "structlog>=25.5.0,<26",
