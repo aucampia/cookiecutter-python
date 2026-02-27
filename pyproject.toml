@@ -26,7 +26,7 @@ dev = [
     "typing-extensions>=4.15.0,<5",
 ]
 templates = [
-    "poethepoet>=0.41,<0.42",
+    "poethepoet>=0.42,<0.43",
     "pydantic>=2.12.5,<3",
     "structlog>=25.5.0,<26",
     "typer>=0.24.1,<0.25",
