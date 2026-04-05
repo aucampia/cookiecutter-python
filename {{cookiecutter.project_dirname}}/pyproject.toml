@@ -44,7 +44,7 @@ dev = [
     "types-PyYAML>=6.0.12.20250915,<7",
     "typing-extensions>=4.15.0,<5",
 # {% if cookiecutter.build_tool == "poe" %}
-    "poethepoet>=0.42,<0.43",
+    "poethepoet>=0.43,<0.44",
 # {% endif %}
 ]
 
