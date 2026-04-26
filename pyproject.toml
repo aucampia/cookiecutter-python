@@ -29,7 +29,7 @@ templates = [
     "poethepoet>=0.44,<0.45",
     "pydantic>=2.12.5,<3",
     "structlog>=25.5.0,<26",
-    "typer>=0.24.1,<0.25",
+    "typer>=0.25,<0.26",
 ]
 
 [tool.uv]
