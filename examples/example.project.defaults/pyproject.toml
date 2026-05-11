@@ -15,7 +15,7 @@ dependencies = [
     "pydantic>=2.12.5,<3",
     "PyYAML>=6.0.3,<7",
 # 
-    "typer>=0.21.1,<0.22",
+    "typer>=0.25,<0.26",
 # 
 # 
     "structlog>=25.5.0,<26",
@@ -31,7 +31,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "codespell>=2.4.1,<3",
-    "mypy>=1.19.1,<2",
+    "mypy>=2,<3",
     "pip-audit>=2.10.0,<3",
     "pytest-asyncio>=1.3.0,<2",
     "pytest-cov>=7.0.0,<8",
@@ -104,6 +104,7 @@ ignore = [
     "S607", # Starting a process with a partial executable path
     "S403", # pickle, cPickle, dill, and shelve modules are possibly insecure
     "RUF067", # __init__ module should not contain any code
+    "S603",
 ]
 
 [tool.ruff.lint.per-file-ignores]
