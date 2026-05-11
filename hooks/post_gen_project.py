@@ -174,7 +174,7 @@ def apply() -> None:
 
 def main() -> None:
     logging.basicConfig(
-        level=os.environ.get("PYTHON_LOGGING_LEVEL", logging.INFO),
+        level=os.environ.get("PYLOGGING_LEVEL", logging.INFO),
         stream=sys.stderr,
         datefmt="%Y-%m-%dT%H:%M:%S",
         format=(
