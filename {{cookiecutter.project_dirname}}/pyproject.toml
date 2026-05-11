@@ -73,7 +73,12 @@ ignore-words = ".codespellignore"
 line-length = 88
 indent-width = 4
 
-target-version = "py{{ cookiecutter.python_version | replace('.', '') }}"
+# {% if 1 == 0 %}
+target-version = "py314"
+# {% else %}{% if 1 == 0 %}
+# {% else %}{{ "\n" }}{% endif %}target-version = "py{{ cookiecutter.python_version | replace('.', '') }}"
+# {% endif %}
+
 [tool.ruff.lint]
 # https://beta.ruff.rs/docs/configuration/
 preview = true

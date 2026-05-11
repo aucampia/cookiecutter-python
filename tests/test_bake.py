@@ -235,8 +235,8 @@ task validate:fix
 """
         elif baked.build_tool == BuildTool.POE:
             configure_commands = """
-poetry install
-poetry run poe validate-fix
+uv sync
+uv run poe validate-fix
 """
         try:
             subprocess.run(
@@ -250,7 +250,7 @@ poetry run poe validate-fix
     set -x
     set -eo pipefail
     # env | sort
-    poetry lock
+    uv lock
     {configure_commands}
     """,
                 ],
@@ -284,11 +284,11 @@ WORKFLOW_ACTION_FACTORIES: dict[
 ] = {
     (WorkflowAction.VALIDATE, BuildTool.GNU_MAKE): lambda result: "make validate",
     (WorkflowAction.VALIDATE, BuildTool.GO_TASK): lambda result: "task validate",
-    (WorkflowAction.VALIDATE, BuildTool.POE): lambda result: "poetry run poe validate",
+    (WorkflowAction.VALIDATE, BuildTool.POE): lambda result: "uv run poe validate",
     (
         WorkflowAction.CLI,
         BuildTool.GNU_MAKE,
-    ): lambda result: f"poetry run {result.context['cli_name']} -vvvv sub leaf 1 2 3",
+    ): lambda result: f"uv run {result.context['cli_name']} -vvvv sub leaf 1 2 3",
     (
         WorkflowAction.CLI,
         BuildTool.GO_TASK,
@@ -296,7 +296,7 @@ WORKFLOW_ACTION_FACTORIES: dict[
     (
         WorkflowAction.CLI,
         BuildTool.POE,
-    ): lambda result: f"poetry run {result.context['cli_name']} -vvvv sub leaf 1 2 3",
+    ): lambda result: f"uv run {result.context['cli_name']} -vvvv sub leaf 1 2 3",
 }
 
 
