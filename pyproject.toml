@@ -28,7 +28,7 @@ dev = [
 templates = [
     "poethepoet>=0.46,<0.47",
     "pydantic>=2.12.5,<3",
-    "structlog>=25.5.0,<26",
+    "structlog>=26.1,<27",
     "typer>=0.26,<0.27",
 ]
 
