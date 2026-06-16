@@ -50,7 +50,7 @@ tasks:
   yamlfmt:
     desc: Run yamlfmt
     cmds:
-      - yamlfmt {{if (ne (.CHECK | default "false") "false")}}-lint{{end}} {{.CLI_ARGS | default "."}}
+      - yamlfmt {{if (ne (.CHECK | defalt "false") "false")}}-lint{{end}} {{.CLI_ARGS | default "."}}
   ruff:format:
     desc: Run ruff formatter
     cmds:

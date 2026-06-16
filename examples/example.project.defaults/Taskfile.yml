@@ -17,6 +17,33 @@ tasks:
     desc: Update dependencies
     cmds:
       - uv lock --upgrade {{.CLI_ARGS}}
+  update:ranges:
+    desc: Update dependency ranges
+    env:
+      SCRIPT: |
+        import re, subprocess, tomllib
+
+        def pkg_name(spec):
+            return re.split(r"[><=~!@;]", spec)[0]
+
+        with open("pyproject.toml", "rb") as f:
+            data = tomllib.load(f)
+
+        groups = []
+        deps = [pkg_name(d) for d in data.get("project", {}).get("dependencies", [])]
+        if deps:
+            groups.append((None, deps))
+        for group, pkgs in data.get("dependency-groups", {}).items():
+            group_deps = [pkg_name(p) for p in pkgs if isinstance(p, str)]
+            if group_deps:
+                groups.append((group, group_deps))
+
+        for group, pkgs in groups:
+            args = ["--group", group] if group else []
+            subprocess.run(["uv", "remove"] + args + pkgs, check=True)
+            subprocess.run(["uv", "add", "--bounds=major"] + args + pkgs, check=True)
+    cmds:
+      - uv run python -c "$SCRIPT"
   ruff:format:
     desc: Run ruff formatter
     cmds:
