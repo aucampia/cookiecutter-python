@@ -58,7 +58,7 @@ tasks:
   ruff:lint:
     desc: Run ruff linter
     cmds:
-      - '{{.RUN_PREFIX}} ruff check --config pyproject.toml {{if (mustFromJson (.FIX | default "false"))}}--fix {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
+      - '{{.RUN_PREFIX}} ruff check --config pyproject.toml {{if (mustFromJson (.FIX | default "false"))}}--fix-only {{end}}{{.CLI_ARGS | default .PY_SOURCE}}'
   mypy:
     desc: Run mypy
     cmds:
