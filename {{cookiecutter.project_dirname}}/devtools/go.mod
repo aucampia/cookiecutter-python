@@ -7,7 +7,7 @@ toolchain go1.26.5
 require (
 	github.com/go-task/task/v3 v3.52.0
 	github.com/google/yamlfmt v0.21.0
-	mvdan.cc/sh/v3 v3.13.2-0.20260725080351-dccf23ff9b34
+	mvdan.cc/sh/v3 v3.13.2-0.20260728103650-58a8c02277ed
 )
 
 require (
