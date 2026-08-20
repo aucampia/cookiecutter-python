@@ -326,7 +326,9 @@ tasks:
           set -euo pipefail
           cd examples/example.project.{{.EXAMPLE_NAME}}
           uv sync
-          uv run task validate:fix validate
+          # env -u GITHUB_ACTIONS: without it the example's own tasks publish
+          # GitHub check runs under the same names this repo's tasks use.
+          env -u GITHUB_ACTIONS uv run task validate:fix validate
           if [ "{{.EXAMPLE_NAME}}" != "nocode" ] ; then
             uv run example.project.{{.EXAMPLE_NAME}}-cli --help
             uv run example.project.{{.EXAMPLE_NAME}}-cli sub leaf --help

@@ -124,8 +124,17 @@ def baked_env(project_path: Path) -> dict[str, str]:
     install`, which refuses to read a config file it has not been told to
     trust. The bake output lives in a throwaway temp dir this harness created
     itself, so trust it explicitly rather than mutating the user's mise state.
+
+    GITHUB_ACTIONS is dropped because it is what gates Taskfile.yml's
+    CHECK_RUN_PREFIX (and devtools/gha-check-run.py's own reporting). Left set,
+    every task run inside every baked project publishes a GitHub check run
+    against the pull request under the same name the repo's own tasks use -
+    so a green `mypy` on the PR could be a throwaway temp project's rather
+    than this repo's.
     """
-    return {**ESCAPED_ENV, "MISE_TRUSTED_CONFIG_PATHS": str(project_path)}
+    env = {**ESCAPED_ENV, "MISE_TRUSTED_CONFIG_PATHS": str(project_path)}
+    env.pop("GITHUB_ACTIONS", None)
+    return env
 
 
 class Baker:
