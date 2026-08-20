@@ -1,4 +1,4 @@
-# ...
+#
 
 ```bash
 poetry install

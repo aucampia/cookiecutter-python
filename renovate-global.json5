@@ -10,6 +10,14 @@
     "allowedCommands": [
         ".*",
     ],
+    // Refreshing mise.lock means running `mise lock`, which Renovate treats
+    // as an unsafe execution because it can run repository-defined behaviour.
+    // Without this, Renovate blocks all mise operations and the lockfile goes
+    // stale the moment it bumps a version in .mise.toml. Renovate runs
+    // `mise trust` itself before `mise lock`.
+    "allowedUnsafeExecutions": [
+        "mise",
+    ],
     // The report file is used to filter branches collected by the
     // pre-push git hook. Only branches that have a report entry and was
     // collected by the pre-push git hook will be "touched".
@@ -40,17 +48,19 @@
             },
             "pinDigests": true,
             "osvVulnerabilityAlerts": true,
-            "dependencyDashboardOSVVulnerabilitySummary": true,
+            // Enum: "none" | "all" | "unresolved" - `true` was silently
+            // rejected by config validation.
+            "dependencyDashboardOSVVulnerabilitySummary": "unresolved",
             "prConcurrentLimit": 5,
             // https://docs.renovatebot.com/modules/manager/
+            // "mise" covers .mise.toml + mise.lock. "gomod", "dockerfile",
+            // "pip-compile" and "pip_requirements" were dropped along with the
+            // devtools Go/Dockerfile toolchain they used to match.
             "enabledManagers": [
                 "pep621",
-                "pip-compile",
                 "github-actions",
-                "gomod",
-                "dockerfile",
                 "docker-compose",
-                "pip_requirements",
+                "mise",
             ],
             "lockFileMaintenance": {
                 "enabled": true,
@@ -62,15 +72,10 @@
             "automergeStrategy": "squash",
             "platformAutomerge": true,
             "rebaseWhen": "conflicted",
-            "postUpdateOptions": [
-                "gomodTidy"
-            ],
             "packageRules": [
                 {
                     "matchManagers": [
-                        "pep621",
-                        "pip_requirements",
-                        "gomod"
+                        "pep621"
                     ],
                     "rangeStrategy": "update-lockfile"
                 }

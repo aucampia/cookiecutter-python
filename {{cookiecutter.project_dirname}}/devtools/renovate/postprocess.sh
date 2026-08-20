@@ -47,8 +47,7 @@ while IFS= read -r line; do
     PR_NUMBER="$(jq -er '[.repositories[env.REPOSITORY].branches[] | select(.branchName == env.BRANCH)][0] | .prNo' /tmp/renovate/report.json)"
     declare -p PR_NUMBER
 
-    if [ "${RENOVATE_AUTO_APPROVE}" == "true" ]
-    then
+    if [ "${RENOVATE_AUTO_APPROVE}" == "true" ]; then
         echo "Auto-approving PR for branch: ${BRANCH} ${PR_NUMBER}" >&2
         curl --silent --fail-with-body -L \
             -X POST \

@@ -26,15 +26,15 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "codespell>=2.4.2,<3.0.0",
-    "mypy>=2.1.0,<3.0.0",
+    "codespell>=2.4.3,<3.0.0",
+    "mypy>=2.3.0,<3.0.0",
     "pip-audit>=2.10.1,<3.0.0",
-    "pytest>=9.1.0,<10.0.0",
+    "pytest>=9.1.1,<10.0.0",
     "pytest-asyncio>=1.4.0,<2.0.0",
     "pytest-cov>=7.1.0,<8.0.0",
-    "ruff>=0.15.17,<0.16.0",
-    "types-pyyaml>=6.0.12.20260518,<7.0.0.0",
-    "typing-extensions>=4.15.0,<5",
+    "ruff>=0.16.2,<0.17.0",
+    "types-pyyaml>=6.0.12.20260724,<7.0.0.0",
+    "typing-extensions>=4.16.0,<5.0.0",
 # 
 ]
 
@@ -88,25 +88,29 @@ select = [
 ]
 
 ignore = [
-    "E501", # line too long:
+    "line-too-long", # line too long:
     # Disabled based on black recommendations
     # https://black.readthedocs.io/en/stable/faq.html#why-are-flake8-s-e203-and-w503-violated
-    "E203", # whitespace before ':'
-    "E231", # missing whitespace after ','
-    "E251", # Unexpected spaces around keyword / parameter equals
+    "whitespace-before-punctuation", # whitespace before ':'
+    "missing-whitespace", # missing whitespace after ','
+    "unexpected-spaces-around-keyword-parameter-equals", # Unexpected spaces around keyword / parameter equals
     # Disabled because this targets Python 3.9 or later
-    "UP007", # Use `X | Y` for type annotations
-    "UP045", # Use `X | None` for type annotations
-    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in {name}
-    "S101", # Use of assert detected.
-    "S404", # subprocess module is possibly insecure
-    "S607", # Starting a process with a partial executable path
-    "S403", # pickle, cPickle, dill, and shelve modules are possibly insecure
-    "RUF067", # __init__ module should not contain any code
-    "S603",
+    "non-pep604-annotation-union", # Use `X | Y` for type annotations
+    "non-pep604-annotation-optional", # Use `X | None` for type annotations
+    "any-type", # Dynamically typed expressions (typing.Any) are disallowed in {name}
+    "assert", # Use of assert detected.
+    "suspicious-subprocess-import", # subprocess module is possibly insecure
+    "start-process-with-partial-path", # Starting a process with a partial executable path
+    # Every subprocess call in this repo runs a fixed, repo-local command line.
+    "subprocess-without-shell-equals-true", # `subprocess` call: check for execution of untrusted input
+    "suspicious-pickle-import", # pickle, cPickle, dill, and shelve modules are possibly insecure
+    "non-empty-init-module", # __init__ module should not contain any code
 ]
 
 [tool.ruff.lint.per-file-ignores]
+# urllib.request.urlopen against the (https) GitHub API - the URL is built
+# from GITHUB_API_URL, not from untrusted input.
+"devtools/gha-check-run.py" = ["suspicious-url-open-usage"]
 
 [tool.ruff.format]
 
@@ -127,7 +131,7 @@ asyncio_mode = "auto"
 
 [tool.mypy]
 # https://mypy.readthedocs.io/en/stable/config_file.html
-files = "src,tests"
+files = "src,tests,devtools"
 mypy_path = "src"
 python_version = "3.14"
 strict = true

@@ -2,26 +2,43 @@
 # https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
 services:
   devtools:
-    restart: never
+    image: ghcr.io/jdx/mise:2026.8.3@sha256:92dbc3f2573926d8974e4641ad8449f16c323130b9f41c39aff19b7b2f500ef6
+    entrypoint: ["mise", "exec", "--"]
+    restart: "no"
     profiles:
       - devtools
-    build:
-      # https://docs.docker.com/reference/compose-file/build/
-      context: devtools
-      dockerfile: Dockerfile
-      cache_to:
-        - ${DOCKER_BUILDKIT_CACHE_TO:-}
-      cache_from:
-        - ${DOCKER_BUILDKIT_CACHE_FROM:-}
     working_dir: /srv/workspace
+    environment:
+      # Passed through from the host/CI shell if set - mise needs it for
+      # GitHub API calls (tool version resolution, uv's artifact attestation
+      # check) or it quickly hits the unauthenticated rate limit.
+      - GITHUB_TOKEN
+      # Passed through so devtools/gha-check-run.py (see Taskfile.yml's
+      # CHECK_RUN_PREFIX) can report each leaf task as its own check run.
+      - GITHUB_ACTIONS
+      - GITHUB_REPOSITORY
+      - GITHUB_API_URL
+      - GITHUB_SERVER_URL
+      - GITHUB_RUN_ID
+      - GITHUB_RUN_ATTEMPT
+      - GHA_CHECK_HEAD_SHA
+      - GITHUB_REF
+      - VALIDATE_PARALLEL
+      - OUTPUT_SARIF
+      - MISE_TRUSTED_CONFIG_PATHS=/srv/workspace
+      - XDG_CACHE_HOME=/srv/__devtools/cache
+      - UV_CACHE_DIR=/srv/__devtools/cache/uv
+      - UV_PYTHON_INSTALL_DIR=/srv/__devtools/cache/uv/python
+      - MISE_DATA_DIR=/srv/__devtools/cache/mise/data
+      - MISE_CACHE_DIR=/srv/__devtools/cache/mise/cache
+      - RUFF_CACHE_DIR=/srv/__devtools/cache/ruff
+      - MYPY_CACHE_DIR=/srv/__devtools/cache/mypy
+      - PYTEST_ADDOPTS=-o cache_dir=/srv/__devtools/cache/pytest
+      - COVERAGE_FILE=/srv/__devtools/cache/coverage/.coverage
     volumes:
       - .:/srv/workspace:z
-      - ${XDG_CACHE_HOME:-xdg-cache-home}:/root/.cache
+      - ${__DEVTOOLS_CACHE_DIR:-devtools-cache}:/srv/__devtools/cache
       - devtools-venv:/srv/workspace/.venv
-      - dot-mypy-cache:/srv/workspace/.mypy_cache
-      - dot-pytest-cache:/srv/workspace/.pytest_cache
-      - dot-ruff-cache:/srv/workspace/.ruff_cache
-      - dot-tox:/srv/workspace/.tox
   renovate:
     image: docker.io/renovate/renovate:latest@sha256:dc8e4efada4528b9b9da339de47aff86a118d721ddb041db306cf97276b92943
     profiles:
@@ -87,12 +104,6 @@ services:
 
         echo "Renovate finished successfully." >&2
 volumes:
-  xdg-cache-home: {}
-  # dot-venv: {}
-  dot-mypy-cache: {}
-  dot-pytest-cache: {}
-  dot-ruff-cache: {}
-  dot-tox: {}
-  renovate-tmp: {}
-  empty: {}
+  devtools-cache: {}
   devtools-venv: {}
+  renovate-tmp: {}

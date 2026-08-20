@@ -158,7 +158,11 @@ def apply() -> None:
     remove_files -= BUILD_TOOL_FILES.get(answers.build_tool, set())
     logger.info("removing unused build files %s", remove_files)
     if not answers.use_oci_devtools:
-        remove_files |= {"docker-compose.yaml", "devtools", "requirements-boot.in"}
+        # devtools/renovate/ only exists to be mounted into the compose
+        # `renovate` service, so it goes with docker-compose.yaml. The rest of
+        # devtools/ stays either way: .github/workflows/validate.yml needs
+        # devtools/gha-check-run.py whether or not the OCI devtools are used.
+        remove_files |= {"docker-compose.yaml", "devtools/renovate"}
     for remove_file in remove_files:
         logger.info("removing unused build file %s", remove_file)
         remove_path = cwd_path / remove_file

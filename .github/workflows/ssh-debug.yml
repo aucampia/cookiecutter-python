@@ -16,11 +16,14 @@ concurrency:
     ${{ contains(fromJSON('["refs/heads/master", "refs/heads/main"]'), github.ref) && format( '{0}-{1}', github.run_id, github.sha ) || '' }}
   cancel-in-progress: true
 
-permissions: write-all
+permissions: {}
 
 jobs:
   ssh-debug:
+    name: ssh-debug
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # checks this repo out to run the tunnel from
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
