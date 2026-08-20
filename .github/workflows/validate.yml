@@ -1,12 +1,9 @@
 name: Validate
-
 on:
-  # push: {}
   workflow_dispatch: {}
   pull_request:
     branches:
       - main
-
 concurrency:
   group: >
     ${{ github.repository }}-
@@ -14,45 +11,65 @@ concurrency:
     ${{ github.ref }}-
     ${{ contains(fromJSON('["refs/heads/master", "refs/heads/main"]'), github.ref) && format( '{0}-{1}', github.run_id, github.sha ) || '' }}
   cancel-in-progress: true
-
 env:
-  XDG_CACHE_HOME: ${{ github.workspace }}/.cache/xdg
-
-permissions:
-  packages: write
-  contents: read
-  id-token: write
-
+  __DEVTOOLS_CACHE_DIR: ${{ github.workspace }}/.cache/devtools
+  GHA_CHECK_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 jobs:
   validate:
+    name: validate
     runs-on: ubuntu-latest
+    # `task validate` bakes every example project and runs its own validation,
+    # so this is a lot slower than a plain lint job.
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      # Lets devtools/gha-check-run.py report per-tool check runs. Not
+      # granted on fork PRs (read-only token there) - the script detects
+      # that and falls back to running tools with no reporting. Scoped to
+      # this job rather than the whole workflow (only job that needs it).
+      checks: write # see comment above (zizmor only reads same-line comments)
+      # Lets devtools/gha-check-run.py upload zizmor's SARIF output to Code
+      # Scanning. Same fork-PR degradation as checks: write above.
+      security-events: write # see comment above
     steps:
       - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      # Need to add repo here first:
-      # https://github.com/users/aucampia/packages/container/cookiecutter-python/settings
-      - name: Log in to the Container registry
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Cache xdg
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Cache devtools state (tools, python, lint/test caches)
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: ${{ env.XDG_CACHE_HOME }}
-          key: xdg-${{ github.job }}-v1-${{ hashFiles('pyproject.toml') }}
+          path: ${{ env.__DEVTOOLS_CACHE_DIR }}
+          # restore-keys only match as a literal prefix of a saved key, so
+          # the key is built from one hashFiles() call per file (not one
+          # hashFiles() over several files, which produces a single opaque
+          # hash no prefix can partially match) - ordered from least to most
+          # frequently changing, so each restore-keys tier below is a valid
+          # prefix of a broader, still-useful cache.
+          key: devtools-${{ github.job }}-v1-${{ hashFiles('.mise.toml') }}-${{ hashFiles('mise.lock') }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('uv.lock') }}
           restore-keys: |
-            xdg-${{ github.job }}-v1
-            xdg-${{ github.job }}
+            devtools-${{ github.job }}-v1-${{ hashFiles('.mise.toml') }}-${{ hashFiles('mise.lock') }}-${{ hashFiles('pyproject.toml') }}-
+            devtools-${{ github.job }}-v1-${{ hashFiles('.mise.toml') }}-${{ hashFiles('mise.lock') }}-
+            devtools-${{ github.job }}-v1-${{ hashFiles('.mise.toml') }}-
+            devtools-${{ github.job }}-v1-
       - name: Run validation
         run: |
           set -x -Eeuo pipefail
-          # printenv GITHUB_TOKEN | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker buildx create --name main --driver=docker-container --bootstrap --use
-          docker compose run --build --rm devtools task configure validate:static
-          sudo chown -R "$(id -u):$(id -g)" .
+          docker compose --progress quiet run --rm devtools \
+            task --output group \
+                 --output-group-begin '::group::{{.TASK}}' \
+                 --output-group-end '::endgroup::' \
+                 configure validate
         env:
-          DOCKER_BUILDKIT_CACHE_TO: "type=registry,ref=ghcr.io/${{ github.repository }}:cache,mode=max"
-          DOCKER_BUILDKIT_CACHE_FROM: "type=registry,ref=ghcr.io/${{ github.repository }}:cache"
+          # mise needs this for GitHub API calls (tool version resolution,
+          # uv's artifact attestation check) or it hits the unauthenticated
+          # rate limit almost immediately; gha-check-run.py needs it too.
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          VALIDATE_PARALLEL: "true"
+          OUTPUT_SARIF: "true"
+      - name: Fix workspace ownership
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" .
+      - name: Report check results
+        if: always()
+        run: python3 ./devtools/gha-check-run.py finalize
+        env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

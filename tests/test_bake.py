@@ -117,6 +117,26 @@ def hash_object(object: Any, hash: Callable[[], hashlib._Hash] = hashlib.sha256)
 ESCAPED_ENV = escape_venv(os.environ)
 
 
+def baked_env(project_path: Path) -> dict[str, str]:
+    """Environment for commands run inside a baked project.
+
+    Baked projects ship a `.mise.toml`, and `task configure` runs `mise
+    install`, which refuses to read a config file it has not been told to
+    trust. The bake output lives in a throwaway temp dir this harness created
+    itself, so trust it explicitly rather than mutating the user's mise state.
+
+    GITHUB_ACTIONS is dropped because it is what gates Taskfile.yml's
+    CHECK_RUN_PREFIX (and devtools/gha-check-run.py's own reporting). Left set,
+    every task run inside every baked project publishes a GitHub check run
+    against the pull request under the same name the repo's own tasks use -
+    so a green `mypy` on the PR could be a throwaway temp project's rather
+    than this repo's.
+    """
+    env = {**ESCAPED_ENV, "MISE_TRUSTED_CONFIG_PATHS": str(project_path)}
+    env.pop("GITHUB_ACTIONS", None)
+    return env
+
+
 class Baker:
     def __init__(self) -> None:
         self._baked: dict[BakeKey, BakeResult] = {}
@@ -241,7 +261,7 @@ uv run poe validate-fix
         try:
             subprocess.run(
                 cwd=baked.project_path,
-                env=ESCAPED_ENV,
+                env=baked_env(baked.project_path),
                 check=True,
                 args=[
                     "bash",
@@ -329,7 +349,7 @@ def test_baked_cmd(
     logging.info("result = %s, project_path = %s", result, project_path)
     subprocess.run(
         cwd=project_path,
-        env=ESCAPED_ENV,
+        env=baked_env(project_path),
         check=True,
         args=[
             "bash",

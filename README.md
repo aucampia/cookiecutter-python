@@ -1,4 +1,4 @@
-# ...
+#
 
 ```bash
 ## from GitHub
@@ -27,15 +27,26 @@ PYLOGGING_LEVEL=DEBUG cruft create ./ --overwrite-if-exists --no-input --config-
 
 ## Inspiration
 
-- https://github.com/hackebrot/cookiecutter-examples/tree/master/create-directories
-- https://github.com/audreyfeldroy/cookiecutter-pypackage
-  - https://github.com/audreyfeldroy/cookiecutter-pypackage/blob/master/cookiecutter.json
-- https://github.com/timhughes/cookiecutter-poetry
-  - https://github.com/timhughes/cookiecutter-poetry/blob/master/cookiecutter.json
-- https://github.com/johanvergeer/cookiecutter-poetry
-  - https://github.com/johanvergeer/cookiecutter-poetry/blob/develop/cookiecutter.json
-- https://github.com/cjolowicz/cookiecutter-hypermodern-python
-  -  https://github.com/cjolowicz/cookiecutter-hypermodern-python/blob/main/cookiecutter.json
+- <https://github.com/hackebrot/cookiecutter-examples/tree/master/create-directories>
+- <https://github.com/audreyfeldroy/cookiecutter-pypackage>
+  - <https://github.com/audreyfeldroy/cookiecutter-pypackage/blob/master/cookiecutter.json>
+- <https://github.com/timhughes/cookiecutter-poetry>
+  - <https://github.com/timhughes/cookiecutter-poetry/blob/master/cookiecutter.json>
+- <https://github.com/johanvergeer/cookiecutter-poetry>
+  - <https://github.com/johanvergeer/cookiecutter-poetry/blob/develop/cookiecutter.json>
+- <https://github.com/cjolowicz/cookiecutter-hypermodern-python>
+  - <https://github.com/cjolowicz/cookiecutter-hypermodern-python/blob/main/cookiecutter.json>
+
+## examples
+
+`examples/` holds the output of baking each config in
+`tests/data/cookie-config/`. After changing the template, regenerate and
+revalidate them:
+
+```bash
+task examples:generate
+task examples:run
+```
 
 ## devtools
 
@@ -46,7 +57,6 @@ docker compose run --rm devtools task configure validate
 ```
 
 ## updating
-
 
 ```bash
 uv tool upgrade --all
@@ -85,7 +95,7 @@ diff -u -r \
     ~/sw/d/github.com/aucampia/cookiecutter-python/var/baked/tmp/example.project.basic/ ./
 ```
 
-## ...
+##
 
 ```bash
 TEST_RAPID=true task test
@@ -95,7 +105,6 @@ TEST_RAPID=true task test -- -rA 'tests/test_bake.py::test_baked_cmd' --log-cli-
 <!--
 MARK 000
 -->
-
 
 ## syncdown
 
@@ -107,7 +116,6 @@ vimdiff ./Taskfile.yml ./link_project/Taskfile.yml
 pipx run --spec=cruft cruft update
 ```
 
-
 ```bash
 GITHUB_REPOSITORY="$(gh repo view --json owner,name -q '.owner.login + "/" + .name')"
 export DOCKER_BUILDKIT_CACHE_TO="type=registry,ref=ghcr.io/${GITHUB_REPOSITORY}:cache,mode=max"
@@ -117,11 +125,9 @@ declare -p GITHUB_REPOSITORY DOCKER_BUILDKIT_CACHE_TO DOCKER_BUILDKIT_CACHE_FROM
 docker compose run --build --rm devtools task configure validate:static
 ```
 
-
 ```bash
 RENOVATE_LOG_LEVEL=debug RENOVATE_AUTO_APPROVE=true task renovate:env:run -- task renovate 2>&1 | tee renovate-output.log
 ```
-
 
 ```bash
 go get -C devtools/ -u .

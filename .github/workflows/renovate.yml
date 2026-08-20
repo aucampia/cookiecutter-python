@@ -42,14 +42,14 @@ env:
   RENOVATE_CACHE_KEY: renovate-cache
   BUILDKIT_PROGRESS: plain
 
-permissions:
-  contents: read
-  pull-requests: write # This is here so PR's can be approved.
-  actions: read
-
 jobs:
   renovate:
+    name: renovate
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # checkout
+      pull-requests: write # This is here so PR's can be approved.
+      actions: read # dawidd6/action-download-artifact reads prior runs
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:

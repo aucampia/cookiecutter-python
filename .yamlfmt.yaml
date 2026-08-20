@@ -1,7 +1,1 @@
-exclude:
-  - .venv
-  - .cache
-formatter:
-  type: basic
-  retain_line_breaks: true
-  scan_folded_as_literal: true
+link_project/.yamlfmt.yaml
