@@ -37,6 +37,17 @@ PYLOGGING_LEVEL=DEBUG cruft create ./ --overwrite-if-exists --no-input --config-
 - <https://github.com/cjolowicz/cookiecutter-hypermodern-python>
   - <https://github.com/cjolowicz/cookiecutter-hypermodern-python/blob/main/cookiecutter.json>
 
+## examples
+
+`examples/` holds the output of baking each config in
+`tests/data/cookie-config/`. After changing the template, regenerate and
+revalidate them:
+
+```bash
+task examples:generate
+task examples:run
+```
+
 ## devtools
 
 ```bash

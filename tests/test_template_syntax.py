@@ -1,4 +1,4 @@
-"""Guard the "template files stay valid in their pre-rendered form" invariant.
+"""Guard the invariants that keep the cookiecutter template directly usable.
 
 Files under the cookiecutter template directory keep their Jinja control flow
 inside native comments (`# {% if ... %}`, `# {%- raw %}`) precisely so that the
@@ -43,3 +43,31 @@ def make_cases() -> list[Path]:
 )
 def test_template_file_parses_unrendered(path: Path) -> None:
     PARSERS[path.suffix](path.read_text())
+
+
+def make_symlink_cases() -> list[Path]:
+    """Root-level symlinks that resolve to a *file* inside the template.
+
+    Directory symlinks (`devtools`, `link_project`) are excluded - their
+    contents are Jinja-templated by design.
+    """
+    return sorted(
+        path
+        for path in PROJECT_PATH.iterdir()
+        if path.is_symlink()
+        and path.resolve().is_file()
+        and path.resolve().is_relative_to(TEMPLATE_PATH.resolve())
+    )
+
+
+@pytest.mark.parametrize("path", make_symlink_cases(), ids=lambda path: path.name)
+def test_shared_file_is_jinja_free(path: Path) -> None:
+    """A file shared with the root by symlink must not be Jinja-templated.
+
+    The root has no cookiecutter context to render with, so it reads the
+    template copy verbatim. Adding `{{ ... }}` or `{% ... %}` to one of these
+    would silently corrupt the root's own config.
+    """
+    content = path.read_text()
+    found = [marker for marker in ("{{", "}}", "{%") if marker in content]
+    assert not found, f"{path} is shared with the root but contains {found}"
