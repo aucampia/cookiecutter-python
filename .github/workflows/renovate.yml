@@ -25,6 +25,18 @@ on:
         options:
           - "true"
           - "false"
+      # Lets this workflow be dispatched against a branch to test a
+      # renovate-global.json5 or workflow change before merging it, without
+      # touching any branch, PR or comment - see `task renovate:gha:run`.
+      dryRun:
+        description: 'Dry-run mode (no branches, PRs or comments)'
+        type: choice
+        default: disabled
+        options:
+          - disabled
+          - full
+          - lookup
+          - extract
   schedule:
     - cron: 0 10 * * *
 
@@ -71,6 +83,12 @@ jobs:
       - name: Run renovate
         run: |
           set -x -Eeuo pipefail
+          # Renovate only accepts extract/lookup/full, so "disabled" - which
+          # exists to give the dispatch input a readable off switch - becomes
+          # the empty value Renovate treats as "not a dry run".
+          if [ "${RENOVATE_DRY_RUN}" == "disabled" ]; then
+            export RENOVATE_DRY_RUN=""
+          fi
           exec task renovate
         env:
           RENOVATE_REPOSITORY_CACHE: ${{ github.event.inputs.repoCache || 'enabled' }}
@@ -78,9 +96,13 @@ jobs:
           RENOVATE_GITHUB_ACTIONS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RENOVATE_LOG_LEVEL: ${{ github.event.inputs.logLevel || 'info' }}
           RENOVATE_AUTO_APPROVE: "${{ github.event.inputs.autoApprove || 'false' }}"
+          RENOVATE_DRY_RUN: "${{ github.event.inputs.dryRun || 'disabled' }}"
 
+      # A dry run does not upload its cache: the artifact is shared with the
+      # scheduled run on main, and a branch under test should not be able to
+      # poison it.
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        if: github.event.inputs.repoCache != 'disabled'
+        if: github.event.inputs.repoCache != 'disabled' && (github.event.inputs.dryRun || 'disabled') == 'disabled'
         with:
           name: ${{ env.RENOVATE_CACHE_KEY }}
           path: ${{ env.RENOVATE_CACHE_ARCHIVE }}
