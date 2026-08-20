@@ -2,7 +2,7 @@
 # https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
 services:
   devtools:
-    image: ghcr.io/jdx/mise:2026.8.3@sha256:92dbc3f2573926d8974e4641ad8449f16c323130b9f41c39aff19b7b2f500ef6
+    image: ghcr.io/jdx/mise:2026.8.10@sha256:f2d637d5e5189f7ec177b73bce5cd5db7e7b17a4f466f887c1b88ac2dd431129
     entrypoint: ["mise", "exec", "--"]
     restart: "no"
     profiles:
