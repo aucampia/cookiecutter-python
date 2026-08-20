@@ -25,7 +25,7 @@ vars:
   # needs a git work tree to do that, which a freshly generated project may not
   # have yet. Tracked files only, like SH_FILES/MD_FILES.
   WORKFLOW_FILES:
-    sh: git -c safe.directory='*' ls-files -- '.github/workflows/*.yml' 2>/dev/null || true
+    sh: git -c safe.directory='*' ls-files -- '.github/workflows/*.yml' '.github/workflows/*.yaml' 2>/dev/null || true
   RUFF_FORMAT: "{{.RUN_PREFIX}} ruff format --config pyproject.toml"
   RUFF_LINT: "{{.RUN_PREFIX}} ruff check --config pyproject.toml"
   YAMLFMT: "mise exec -- yamlfmt"

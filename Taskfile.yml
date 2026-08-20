@@ -37,7 +37,7 @@ vars:
   # workflows - that is where the template's own copy gets linted for real,
   # since unrendered it is wrapped in Jinja markers.
   WORKFLOW_FILES:
-    sh: git -c safe.directory='*' ls-files -- '.github/workflows/*.yml' 'examples/*/.github/workflows/*.yml' 2>/dev/null || true
+    sh: git -c safe.directory='*' ls-files -- '.github/workflows/*.yml' '.github/workflows/*.yaml' 'examples/*/.github/workflows/*.yml' 'examples/*/.github/workflows/*.yaml' 2>/dev/null || true
   RUFF_FORMAT: "{{.RUN_PREFIX}} ruff format --config pyproject.toml"
   RUFF_LINT: "{{.RUN_PREFIX}} ruff check --config pyproject.toml"
   YAMLFMT: "mise exec -- yamlfmt"
