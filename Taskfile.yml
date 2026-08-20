@@ -436,12 +436,105 @@ tasks:
   renovate:
     desc: Run renovate
     cmds:
+      # Fail fast on a broken global config instead of letting Renovate boot,
+      # log warnings about it and then run with a half-applied config.
+      - task: renovate:config:validate
       - |
         echo "RENOVATE_REPOSITORY_CACHE=${RENOVATE_REPOSITORY_CACHE@Q}" >&2
         echo "RENOVATE_LOG_LEVEL=${RENOVATE_LOG_LEVEL@Q}" >&2
         echo "RENOVATE_AUTO_APPROVE=${RENOVATE_AUTO_APPROVE@Q}" >&2
       - docker compose run --quiet-build --quiet-pull -T --rm renovate
       - task: renovate:cache:export
+
+  renovate:gha:run:
+    desc: Run the renovate workflow against the current branch
+    summary: |
+      Dispatch .github/workflows/renovate.yml against the current branch, so a
+      renovate-global.json5 or workflow change can be exercised with the real
+      workflow, cache and token before it is merged.
+
+      Defaults to a full dry run - no branches, PRs or comments, and the shared
+      cache artifact is not overwritten. Override with
+      `RENOVATE_GHA_DRY_RUN=disabled` for a real run from the branch.
+
+      GitHub only offers workflow_dispatch for workflows that exist on the
+      default branch, but it then runs the *branch's* copy of the workflow, and
+      the config comes from the branch checkout, so both are under test.
+
+      The run is watched to completion and its renovate-report artifact is
+      downloaded to RENOVATE_REPORT_DIR.
+    env:
+      GITHUB_REPOSITORY:
+        sh: gh repo view --json owner,name -q '.owner.login + "/" + .name'
+      REF:
+        sh: git branch --show-current
+    vars:
+      GHA_DRY_RUN: '{{.RENOVATE_GHA_DRY_RUN | default "full"}}'
+      GHA_LOG_LEVEL: '{{.RENOVATE_GHA_LOG_LEVEL | default "debug"}}'
+      REPORT_DIR: '{{.RENOVATE_REPORT_DIR | default "/tmp/renovate-gha-report"}}'
+    cmds:
+      - |
+        set -euo pipefail
+
+        declare -p REF GITHUB_REPOSITORY >&2
+
+        # `gh workflow run` does not report the run it created, so remember the
+        # newest run on this branch and wait for a different one to show up.
+        LAST_RUN_ID="$(gh run list --repo "${GITHUB_REPOSITORY}" --workflow renovate.yml --branch "${REF}" --limit 1 --json databaseId --jq '.[0].databaseId // ""')"
+
+        gh workflow run renovate.yml --repo "${GITHUB_REPOSITORY}" --ref "${REF}" \
+          --field "dryRun={{.GHA_DRY_RUN}}" \
+          --field "logLevel={{.GHA_LOG_LEVEL}}" \
+          --field autoApprove=false
+
+        RUN_ID="${LAST_RUN_ID}"
+        while [ "${RUN_ID}" == "${LAST_RUN_ID}" ]; do
+          sleep 4
+          echo "Waiting for the renovate run on ${REF} to start..." >&2
+          RUN_ID="$(gh run list --repo "${GITHUB_REPOSITORY}" --workflow renovate.yml --branch "${REF}" --limit 1 --json databaseId --jq '.[0].databaseId // ""')"
+        done
+        declare -p RUN_ID >&2
+
+        WATCH_STATUS=0
+        gh run watch --repo "${GITHUB_REPOSITORY}" --exit-status "${RUN_ID}" || WATCH_STATUS="${?}"
+
+        # The workflow uploads the report with `if: always()`, so it is there
+        # for a failed run too - which is when it is most worth reading. A run
+        # that died before the upload step has no artifact, which is not itself
+        # an error worth masking the run's own status with.
+        mkdir -p {{.REPORT_DIR | q}}
+        if gh run download --repo "${GITHUB_REPOSITORY}" "${RUN_ID}" -n renovate-report --dir {{.REPORT_DIR | q}}; then
+          echo "Renovate report downloaded to {{.REPORT_DIR}}" >&2
+        else
+          echo "No renovate-report artifact on run ${RUN_ID}" >&2
+        fi
+
+        exit "${WATCH_STATUS}"
+
+  renovate:config:validate:
+    desc: Validate the Renovate global config
+    summary: |
+      Validate the Renovate global config.
+
+      Runs renovate-config-validator out of the same image the renovate
+      service uses, so the validator always matches the Renovate that will
+      consume the config. Passing the file as an argument makes the validator
+      treat it as self-hosted global config, which is what this file is.
+      --strict turns warnings into failures, including unknown options inside
+      `repositories[0]`.
+
+      Not part of `task validate`: that runs inside the devtools container,
+      which has no docker socket and no renovate binary.
+    cmds:
+      - |
+        set -euo pipefail
+        # Validation needs no credentials, but compose interpolates these into
+        # the service definition and warns when they are unset. --entrypoint="":
+        # the service entrypoint installs Renovate's git hooks, which the
+        # validator has no use for.
+        RENOVATE_TOKEN="" RENOVATE_GITHUB_ACTIONS_TOKEN="" \
+          docker compose run --entrypoint="" --quiet-build --quiet-pull -T --rm renovate \
+          renovate-config-validator --strict /srv/workspace/renovate-global.json5
 
   renovate:report:export:
     desc: Export the Renovate report

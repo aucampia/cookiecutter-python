@@ -1,7 +1,7 @@
 {
     // https://docs.renovatebot.com/self-hosted-experimental/
     // https://docs.renovatebot.com/self-hosted-configuration/
-    //   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "$schema": "https://docs.renovatebot.com/renovate-global-schema.json",
     "platform": "github",
     "repositoryCache": "enabled",
     // The config is in the global config file (i.e. this file)
@@ -10,14 +10,12 @@
     "allowedCommands": [
         ".*",
     ],
-    // Refreshing mise.lock means running `mise lock`, which Renovate treats
-    // as an unsafe execution because it can run repository-defined behaviour.
-    // Without this, Renovate blocks all mise operations and the lockfile goes
-    // stale the moment it bumps a version in .mise.toml. Renovate runs
-    // `mise trust` itself before `mise lock`.
-    "allowedUnsafeExecutions": [
-        "mise",
-    ],
+    // `allowedUnsafeExecutions` is deliberately unset. Refreshing mise.lock
+    // means running `mise lock`, which can run repository-defined behaviour.
+    // While mise is not allowlisted Renovate runs it with `MISE_SAFE=1` and
+    // without `mise trust`, which is a hard boundary against that; allowlisting
+    // "mise" takes the trust-then-lock path instead. Needs mise >= 2026.7.12,
+    // below which Renovate blocks mise entirely rather than running it unsafe.
     // The report file is used to filter branches collected by the
     // pre-push git hook. Only branches that have a report entry and was
     // collected by the pre-push git hook will be "touched".
@@ -38,7 +36,17 @@
             // https://docs.renovatebot.com/configuration-options/
             // https://docs.renovatebot.com/modules/manager/
             "extends": [
-                "config:recommended"
+                "config:recommended",
+                // Direct PyPI bumps have to be 3 days old before Renovate
+                // proposes them, so a yanked or compromised release has time
+                // to be pulled. The preset's `internalChecksFilter: "strict"`
+                // filters the candidate out entirely instead of parking a PR,
+                // which matters here: everything automerges, so a parked PR
+                // would just hold a `prConcurrentLimit` slot for three days.
+                // This only covers updates that edit a pyproject.toml
+                // constraint - the preset exempts `lockfileUpdate`, and
+                // transitive deps in uv.lock are never age-gated.
+                "security:minimumReleaseAgePypi",
             ],
             "labels": [
                 "dependencies"
@@ -72,6 +80,14 @@
             "automergeStrategy": "squash",
             "platformAutomerge": true,
             "rebaseWhen": "conflicted",
+            // By default Renovate only posts the artifact status check when an
+            // artifact update failed, so a green result never exists and the
+            // check can't be made required. "always" posts green too, so a
+            // uv.lock/mise.lock that Renovate failed to refresh can block the
+            // merge instead of riding along with platformAutomerge.
+            "statusCheckWhen": {
+                "artifactError": "always",
+            },
             "packageRules": [
                 {
                     "matchManagers": [
