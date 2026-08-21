@@ -95,7 +95,12 @@ jobs:
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
           RENOVATE_GITHUB_ACTIONS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RENOVATE_LOG_LEVEL: ${{ github.event.inputs.logLevel || 'info' }}
-          RENOVATE_AUTO_APPROVE: "${{ github.event.inputs.autoApprove || 'false' }}"
+          # `github.event.inputs` only exists for workflow_dispatch, so this
+          # fallback is what the scheduled run gets - and the scheduled run is
+          # the one that has to approve, since everything here automerges. A
+          # dispatch always carries the input, defaulted to "true" above, and
+          # `task renovate:gha:run` passes "false" explicitly.
+          RENOVATE_AUTO_APPROVE: "${{ github.event.inputs.autoApprove || 'true' }}"
           RENOVATE_DRY_RUN: "${{ github.event.inputs.dryRun || 'disabled' }}"
 
       # A dry run does not upload its cache: the artifact is shared with the
