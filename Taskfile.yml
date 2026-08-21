@@ -440,6 +440,9 @@ tasks:
       # log warnings about it and then run with a half-applied config.
       - task: renovate:config:validate
       - |
+        # docker-compose.yaml supplies the defaults for these, so leaving them
+        # unset is the normal case rather than an error nounset should abort on.
+        set +u
         echo "RENOVATE_REPOSITORY_CACHE=${RENOVATE_REPOSITORY_CACHE@Q}" >&2
         echo "RENOVATE_LOG_LEVEL=${RENOVATE_LOG_LEVEL@Q}" >&2
         echo "RENOVATE_AUTO_APPROVE=${RENOVATE_AUTO_APPROVE@Q}" >&2
