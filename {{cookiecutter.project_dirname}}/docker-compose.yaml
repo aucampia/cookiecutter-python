@@ -56,27 +56,16 @@ services:
     volumes:
       - .:/srv/workspace
       - renovate-tmp:/tmp/renovate
+    # Bypasses the image's own entrypoint, which the command below replaces
+    # with the parts of it that are actually needed.
     entrypoint:
       - bash
       - -c
-      - |
-        set -Eeuo pipefail
-
-        mkdir -vp "$${HOME}/.config/git/hooks"
-        git config --global core.hooksPath "$${HOME}/.config/git/hooks"
-        cp -v /srv/workspace/devtools/renovate/githooks/* "$${HOME}/.config/git/hooks/"
-        chmod -R -v +x "$${HOME}/.config/git/hooks/"
-
-        exec "$${0}" "$${@}"
     command:
-      - bash
-      - -c
       - |
         set -Eeuo pipefail
 
         declare -p LOG_LEVEL RENOVATE_REPOSITORY_CACHE RENOVATE_AUTO_APPROVE RENOVATE_DRY_RUN >&2
-
-        echo -n > /tmp/renovate/branches.ndjson
 
         # Code below comes from:
         # docker run --rm -i docker.io/renovate/renovate:latest cat /usr/local/sbin/renovate-entrypoint.sh
@@ -84,14 +73,11 @@ services:
 
         export GIT_TRACE=/tmp/renovate/git-trace.log
         echo -n > /tmp/renovate/git-trace.log
-        echo -n > /tmp/renovate/githooks-output.log
 
         dump_logs() {
           if [ "$${LOG_LEVEL}" == "debug" ]; then
             echo "GIT_TRACE logs:" >&2
             cat /tmp/renovate/git-trace.log >&2
-            echo "GITHOOKS_OUTPUT logs:" >&2
-            cat /tmp/renovate/githooks-output.log >&2
           fi
         }
 
