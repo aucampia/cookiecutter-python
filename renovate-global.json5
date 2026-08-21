@@ -34,9 +34,12 @@
                 // filters the candidate out entirely instead of parking a PR,
                 // which matters here: everything automerges, so a parked PR
                 // would just hold a `prConcurrentLimit` slot for three days.
-                // This only covers updates that edit a pyproject.toml
-                // constraint - the preset exempts `lockfileUpdate`, and
-                // transitive deps in uv.lock are never age-gated.
+                // This covers updates that edit a pyproject.toml constraint,
+                // which under `rangeStrategy: "replace"` below is every PR the
+                // pep621 manager raises. In-range and transitive bumps arrive
+                // through `lockFileMaintenance` instead, which the preset
+                // exempts outright: `uv lock --upgrade` takes whatever is
+                // newest at lock time, with no age check at all.
                 "security:minimumReleaseAgePypi",
             ],
             "labels": [
@@ -84,7 +87,20 @@
                     "matchManagers": [
                         "pep621"
                     ],
-                    "rangeStrategy": "update-lockfile"
+                    // "replace", not "update-lockfile": `rangeStrategy` and
+                    // `lockFileMaintenance` are separate code paths that do not
+                    // consider one another, so "update-lockfile" raised a
+                    // uv.lock-only PR per in-range bump while
+                    // `lockFileMaintenance` rewrote the same file wholesale -
+                    // the two collided on uv.lock on every run, and
+                    // `rebaseWhen: "conflicted"` only unblocked the loser a day
+                    // later. "replace" raises a PR only when the new version
+                    // falls outside the constraint, editing pyproject.toml and
+                    // uv.lock together; everything in range is left to
+                    // `lockFileMaintenance`, which is then the only writer of
+                    // uv.lock on all other days.
+                    // https://github.com/renovatebot/renovate/discussions/19285
+                    "rangeStrategy": "replace"
                 }
             ]
         }
