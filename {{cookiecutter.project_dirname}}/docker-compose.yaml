@@ -40,7 +40,7 @@ services:
       - ${__DEVTOOLS_CACHE_DIR:-devtools-cache}:/srv/__devtools/cache
       - devtools-venv:/srv/workspace/.venv
   renovate:
-    image: docker.io/renovate/renovate:latest@sha256:5731d078a91bf30df213674dcd94853fe164804d249a9ad2d6235ef81aec96a5
+    image: docker.io/renovate/renovate:latest@sha256:13bde30cd5be9b5702965ac4e6769021724b2cc286f8cba3e76b5df4d98b5d9b
     profiles:
       - renovate
     restart: "no"
